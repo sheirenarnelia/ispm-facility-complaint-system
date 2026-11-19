@@ -1,0 +1,9 @@
+node_modules/
+.DS_Store
+.env
+data/complaints.json
+public/uploads/*
+!public/uploads/.gitkeep
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
