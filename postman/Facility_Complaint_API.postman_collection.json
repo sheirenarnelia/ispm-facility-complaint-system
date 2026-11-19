@@ -1,0 +1,139 @@
+{
+  "info": {
+    "_postman_id": "c1f7a4b8-2026-4fa2-bc44-faccomplaint01",
+    "name": "ISPM - Facility Complaint System API (Sprint 1)",
+    "description": "API Test Suite for QA Lead - ISAPMD Final Project Case 4 (Campus Facility Complaint & Service Request System)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/health",
+          "host": ["{{base_url}}"],
+          "path": ["api", "health"]
+        },
+        "description": "Verifikasi server berjalan normal dan respon healthy"
+      },
+      "response": []
+    },
+    {
+      "name": "2. Get Statistics Summary",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/complaints/stats/summary",
+          "host": ["{{base_url}}"],
+          "path": ["api", "complaints", "stats", "summary"]
+        },
+        "description": "Mengambil ringkasan metrik status keluhan"
+      },
+      "response": []
+    },
+    {
+      "name": "3. Get All Complaints",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/complaints",
+          "host": ["{{base_url}}"],
+          "path": ["api", "complaints"]
+        },
+        "description": "Mendapatkan seluruh daftar laporan keluhan"
+      },
+      "response": []
+    },
+    {
+      "name": "4. Filter Complaints by Status",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/complaints?status=Submitted",
+          "host": ["{{base_url}}"],
+          "path": ["api", "complaints"],
+          "query": [
+            {
+              "key": "status",
+              "value": "Submitted"
+            }
+          ]
+        },
+        "description": "Filter daftar keluhan berstatus Submitted"
+      },
+      "response": []
+    },
+    {
+      "name": "5. Get Complaint by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/complaints/FAC-2026-001",
+          "host": ["{{base_url}}"],
+          "path": ["api", "complaints", "FAC-2026-001"]
+        },
+        "description": "Melihat detail satu laporan keluhan spesifik"
+      },
+      "response": []
+    },
+    {
+      "name": "6. Submit New Complaint (POST)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"reporterName\": \"Rizky QA Tester\",\n  \"reporterEmail\": \"rizky.qa@student.president.ac.id\",\n  \"building\": \"Gedung B (Laboratorium Terpadu)\",\n  \"room\": \"Lab Multimedia B-204\",\n  \"category\": \"Kelistrikan & AC\",\n  \"priority\": \"Mendesak\",\n  \"description\": \"Stop kontak meja 4 mengeluarkan percikan api saat dicolokkan laptop.\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/complaints",
+          "host": ["{{base_url}}"],
+          "path": ["api", "complaints"]
+        },
+        "description": "Mengirimkan formulir laporan keluhan baru"
+      },
+      "response": []
+    },
+    {
+      "name": "7. Update Complaint Status (PATCH)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"In Progress\",\n  \"staffNotes\": \"Petugas teknisi listrik sedang mengganti stop kontak rusak.\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/complaints/FAC-2026-001/status",
+          "host": ["{{base_url}}"],
+          "path": ["api", "complaints", "FAC-2026-001", "status"]
+        },
+        "description": "Petugas fasilitas memperbarui status penanganan laporan"
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    }
+  ]
+}
