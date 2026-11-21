@@ -5,6 +5,7 @@ let currentSelectedStatus = null;
 document.addEventListener('DOMContentLoaded', () => {
   loadStats();
   loadComplaints();
+  switchView('list');
 });
 
 // Switch between Form and List tabs
@@ -74,6 +75,14 @@ function renderTable(complaints) {
   }
 
   emptyState.classList.add('hidden');
+
+  // Update Sprint 2 Emergency Urgent Hazards Count
+  const urgentItems = complaints.filter(c => c.priority === 'Urgent');
+  const urgentCountElem = document.getElementById('urgentCount');
+  if (urgentCountElem) {
+    urgentCountElem.innerText = `${urgentItems.length} Active Tickets (${urgentItems.map(u => u.id).join(', ')})`;
+  }
+
   tbody.innerHTML = complaints.map(c => {
     let statusClass = 'badge-submitted';
     if (c.status === 'In Progress') statusClass = 'badge-inprogress';
@@ -81,7 +90,7 @@ function renderTable(complaints) {
 
     let priorityBadge = '';
     if (c.priority === 'Urgent' || c.priority === 'Mendesak') {
-      priorityBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-700">Urgent</span>';
+      priorityBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-700 border border-rose-200">Urgent</span>';
     } else if (c.priority === 'Medium' || c.priority === 'Sedang') {
       priorityBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-amber-100 text-amber-700">Medium</span>';
     } else {
@@ -97,6 +106,11 @@ function renderTable(complaints) {
       month: 'short',
       year: 'numeric'
     });
+
+    let techDisplay = '<span class="inline-flex items-center text-xs text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md font-medium">⚠️ Unassigned</span>';
+    if (c.assignedTechnician && c.assignedTechnician !== 'Unassigned') {
+      techDisplay = `<span class="inline-flex items-center text-xs text-blue-800 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-md font-medium">${c.assignedTechnician}</span>`;
+    }
 
     return `
       <tr class="hover:bg-slate-50/80 transition-colors">
@@ -120,6 +134,9 @@ function renderTable(complaints) {
           <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${statusClass}">
             ${c.status}
           </span>
+        </td>
+        <td class="py-3.5 px-4">
+          ${techDisplay}
         </td>
         <td class="py-3.5 px-4 text-center">
           ${photoThumb}
@@ -227,6 +244,11 @@ function openDetail(id) {
   document.getElementById('modalRoom').innerText = complaint.room || '-';
   document.getElementById('modalDescription').innerText = complaint.description;
   document.getElementById('modalStaffNotes').value = complaint.staffNotes || '';
+  
+  const techSelect = document.getElementById('modalTechnician');
+  if (techSelect) {
+    techSelect.value = complaint.assignedTechnician || 'Unassigned';
+  }
 
   const photoWrapper = document.getElementById('modalPhotoWrapper');
   const photoElem = document.getElementById('modalPhoto');
@@ -254,6 +276,7 @@ async function saveStatusUpdate() {
   if (!activeTicketId) return;
 
   const staffNotes = document.getElementById('modalStaffNotes').value;
+  const assignedTechnician = document.getElementById('modalTechnician').value;
 
   try {
     const res = await fetch(`/api/complaints/${activeTicketId}/status`, {
@@ -261,13 +284,14 @@ async function saveStatusUpdate() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         status: currentSelectedStatus,
-        staffNotes
+        staffNotes,
+        assignedTechnician
       })
     });
 
     const result = await res.json();
     if (result.success) {
-      showToast(`Ticket ${activeTicketId} status updated to ${currentSelectedStatus}!`);
+      showToast(`Ticket ${activeTicketId} updated (${currentSelectedStatus} | ${assignedTechnician})!`);
       closeModal();
       loadComplaints();
     } else {
@@ -276,6 +300,46 @@ async function saveStatusUpdate() {
   } catch (err) {
     showToast('Failed to connect to server.', 'error');
   }
+}
+
+// Sprint 2 Change Request Features
+function filterByUrgentOnly() {
+  const urgentTickets = currentComplaints.filter(c => c.priority === 'Urgent');
+  renderTable(urgentTickets);
+  showToast(`Filtered: Displaying ${urgentTickets.length} urgent hazard tickets only.`);
+}
+
+function exportToCSV() {
+  if (!currentComplaints || currentComplaints.length === 0) {
+    showToast('No complaints data available to export.', 'error');
+    return;
+  }
+
+  const headers = ['Ticket ID', 'Reporter', 'Email', 'Building', 'Room', 'Category', 'Priority', 'Status', 'Assigned Technician', 'Description', 'Submitted Date'];
+  const rows = currentComplaints.map(c => [
+    `"${c.id}"`,
+    `"${c.reporterName}"`,
+    `"${c.reporterEmail || ''}"`,
+    `"${c.building}"`,
+    `"${c.room || ''}"`,
+    `"${c.category}"`,
+    `"${c.priority}"`,
+    `"${c.status}"`,
+    `"${c.assignedTechnician || 'Unassigned'}"`,
+    `"${c.description.replace(/"/g, '""')}"`,
+    `"${new Date(c.createdAt).toISOString()}"`
+  ]);
+
+  const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement('a');
+  link.setAttribute('href', encodedUri);
+  link.setAttribute('download', `CampusFix_Maintenance_Report_${new Date().toISOString().slice(0, 10)}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+  showToast('Maintenance CSV Report exported successfully!');
 }
 
 // Toast notification helper

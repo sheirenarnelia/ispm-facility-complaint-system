@@ -92,6 +92,7 @@ class ComplaintModel {
       description: complaintData.description,
       photoUrl: complaintData.photoUrl || null,
       status: "Submitted",
+      assignedTechnician: complaintData.assignedTechnician || "Unassigned",
       staffNotes: "",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
@@ -102,7 +103,7 @@ class ComplaintModel {
     return record;
   }
 
-  static updateStatus(id, newStatus, staffNotes) {
+  static updateStatus(id, newStatus, staffNotes, assignedTechnician) {
     const list = this.getAll();
     const index = list.findIndex(item => item.id.toLowerCase() === id.toLowerCase());
     if (index === -1) return null;
@@ -110,6 +111,9 @@ class ComplaintModel {
     list[index].status = newStatus;
     if (staffNotes !== undefined) {
       list[index].staffNotes = staffNotes;
+    }
+    if (assignedTechnician !== undefined) {
+      list[index].assignedTechnician = assignedTechnician;
     }
     list[index].updatedAt = new Date().toISOString();
 

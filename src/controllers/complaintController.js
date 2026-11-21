@@ -110,7 +110,7 @@ exports.createComplaint = (req, res) => {
 exports.updateStatus = (req, res) => {
   try {
     const { id } = req.params;
-    const { status, staffNotes } = req.body;
+    const { status, staffNotes, assignedTechnician } = req.body;
 
     const validStatuses = ['Submitted', 'In Progress', 'Resolved', 'Rejected'];
     if (!status || !validStatuses.includes(status)) {
@@ -120,7 +120,7 @@ exports.updateStatus = (req, res) => {
       });
     }
 
-    const updated = ComplaintModel.updateStatus(id, status, staffNotes);
+    const updated = ComplaintModel.updateStatus(id, status, staffNotes, assignedTechnician);
     if (!updated) {
       return res.status(404).json({
         success: false,
