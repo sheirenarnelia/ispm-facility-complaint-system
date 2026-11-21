@@ -59,11 +59,11 @@
 
       <!-- Navigation Tabs -->
       <div class="flex items-center space-x-2">
-        <button id="navTabForm" onclick="switchView('form')" class="px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all bg-blue-600 text-white shadow-sm">
-          + New Complaint
+        <button id="navTabList" onclick="switchView('list')" class="px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all bg-blue-600 text-white shadow-sm">
+          Complaints Directory (<span id="navCount">6</span>)
         </button>
-        <button id="navTabList" onclick="switchView('list')" class="px-3.5 py-1.5 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all">
-          Complaints Directory (<span id="navCount">0</span>)
+        <button id="navTabForm" onclick="switchView('form')" class="px-3.5 py-1.5 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all">
+          + New Complaint
         </button>
       </div>
     </div>
@@ -122,7 +122,7 @@
     </div>
 
     <!-- VIEW 1: Form Pelaporan Keluhan (Reporter Portal) -->
-    <section id="viewForm" class="max-w-3xl mx-auto">
+    <section id="viewForm" class="max-w-3xl mx-auto hidden">
       <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8">
         <div class="border-b border-slate-100 pb-5 mb-6">
           <h2 class="text-xl font-bold text-slate-900">Facility Incident Reporting Form</h2>
@@ -256,7 +256,7 @@
     </section>
 
     <!-- VIEW 2: Complaints Directory / Admin Dashboard -->
-    <section id="viewList" class="hidden space-y-5">
+    <section id="viewList" class="space-y-5">
       <!-- Search and Filter Bar -->
       <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex flex-col md:flex-row gap-3 items-center justify-between">
         <div class="relative w-full md:w-80">
@@ -436,6 +436,6 @@
     </div>
   </footer>
 
-  <script src="/app.js"></script>
+  <script src="/app.js?v=2.1"></script>
 </body>
 </html>
