@@ -1,136 +1,136 @@
-# 🏢 Campus Facility Complaint and Service Request System
+# 🏛️ CampusFix: Campus Facility Complaint and Service Request System
 
-> **Information Systems Agile Project Management with DevOps (IS 2026)**  
-> **Dosen Pengampu:** Eka Parima Saragih, S.Kom., M.Kom.  
-> **Studi Kasus:** Case 4 - Facility Complaint and Service Request System  
-> **Development Lead:** Sheiren Arnelia (NIM: Mahasiswa President University)
-
----
-
-## 📌 1. Latar Belakang & Deskripsi Masalah
-
-Pada pengelolaan fasilitas operasional kampus saat ini, proses pelaporan kerusakan sarana prasarana (AC mati, proyektor rusak, kran bocor, perabotan rusak) masih banyak dilakukan secara konvensional melalui pesan WhatsApp informal atau laporan lisan.
-
-**Permasalahan yang dihadapi:**
-1. **Pelapor (Mahasiswa / Dosen / Staf):** Tidak dapat memantau status tindak lanjut (*tracking progress*) dari laporan yang telah diajukan.
-2. **Unit Pengelola Fasilitas Kampus:** Kesulitan dalam mengorganisasi antrean laporan, menentukan prioritas penanganan (urgensi), mendisposisikan teknisi, serta memantau rekapitulasi keluhan yang belum terselesaikan.
-
-**Solusi Sistem:**
-Aplikasi web terpadu untuk pencatatan keluhan fasilitas secara transparan dengan alur status terstruktur (*Submitted* ➔ *In Progress* ➔ *Resolved*), formulir digital dengan bukti foto fisik, dashboard status real-time, dan REST API yang siap diuji serta diintegrasikan ke pipeline CI/CD.
+> **Course:** Information Systems Agile Project Management with DevOps (ISAPMD 20261)  
+> **Lecturer:** Eka Parima Saragih, S.Kom., M.Kom.  
+> **Case Study:** Path B — Case 4: Facility Complaint and Service Request System  
+> **Development Lead:** Sheiren Arnelia  
+> **Repository:** `sheirenarnelia / ispm-facility-complaint-system`
 
 ---
 
-## 🛠️ 2. Tech Stack
+## 📌 1. Background & Problem Statement
 
-Arsitektur aplikasi dirancang ringan, cepat dieksekusi, dan mudah dideploy tanpa overhead konfigurasi database eksternal:
+In current university campus facility operations, reporting broken or malfunctioning infrastructure (faulty air conditioning, broken projectors, plumbing leaks, damaged classroom furniture) is primarily handled through informal WhatsApp messages, paper logbooks, or verbal reports to security personnel.
 
-| Layer | Teknologi | Alasan Pemilihan |
+### Key Pain Points:
+1. **Reporters (Students / Faculty / Campus Staff):** Complete lack of progress visibility or automated status tracking once an incident is reported.
+2. **Campus Facility Management Department:** Inability to systematically queue incoming reports, prioritize high-urgency maintenance requests, dispatch technicians effectively, and audit unresolved complaints.
+
+### Proposed Digital Solution:
+**CampusFix** is a centralized, responsive web platform providing transparent facility incident tracking with structured state transitions (*Submitted* ➔ *In Progress* ➔ *Resolved*), digital reporting forms with photographic evidence upload, a real-time administrative monitoring dashboard, and standardized REST APIs backed by continuous integration (CI) automation.
+
+---
+
+## 🛠️ 2. Technology Stack
+
+The system architecture is engineered to be lightweight, modular, and cloud-ready without unnecessary database overhead during early sprint increments:
+
+| Layer | Technology | Engineering Rationale |
 | :--- | :--- | :--- |
-| **Frontend** | HTML5, Tailwind CSS (CDN), Vanilla JavaScript | Cepat dibangun, ringan, tanpa kompilasi rumit, responsif di semua perangkat. |
-| **Backend** | Node.js + Express.js | Framework standar industri, performa tinggi, struktur routing REST API bersih. |
-| **File Storage** | Multer Storage Engine | Penanganan upload foto fisik kerusakan fasilitas secara lokal/cloud. |
-| **Data Layer** | Persistent JSON / In-Memory Mock Store | Siap dijalankan *out-of-the-box* untuk demo lokal, kompatibel migrasi ke Supabase/PostgreSQL. |
-| **Automated Test**| Node.js Native Test Runner (`node:test`, `node:assert`) | Ringan, lulus instan, tanpa dependency berat untuk GitHub Actions CI. |
-| **CI / DevOps** | GitHub Actions Pipeline | Otomatisasi pengujian linting/unit test pada branch `main` & `dev`. |
+| **Frontend Client** | HTML5, Tailwind CSS (via CDN), Vanilla JavaScript | Rapid prototyping, zero compilation overhead, fully responsive across mobile and desktop. |
+| **Backend Service** | Node.js + Express.js | Industry standard asynchronous runtime, robust middleware ecosystem, clean MVC REST API routing. |
+| **File Storage** | Multer Multipart Stream Engine | Secure local and cloud multipart image upload handling with payload boundary protection. |
+| **Data Layer** | Structured Relational JSON Store | Zero-setup local persistence with pre-seeded data, directly schema-compatible with PostgreSQL / Supabase. |
+| **Automated Testing**| Node.js Native Test Runner (`node:test`, `node:assert`) | Zero external test dependencies, sub-second execution speed, deterministic CI test runs. |
+| **DevOps & CI/CD** | GitHub Actions Pipeline | Automated multi-version matrix build and testing on `main` and `dev` branches. |
 
 ---
 
-## 🚀 3. Sprint 1 Deliverables (Evaluasi Kelas 24 Nov 2026)
+## 🚀 3. Sprint 1 Deliverables (Class Evaluation Milestone: 24 Nov 2026)
 
-Untuk evaluasi perdana di kelas pada Selasa, 24 November 2026, sistem telah menyediakan:
-- [x] **Formulir Pelaporan Keluhan Fasilitas:**
-  - Input: Nama Pelapor, Email/Kontak, Lokasi/Gedung, Detail Ruangan, Kategori Kerusakan, Tingkat Urgensi, Deskripsi Kerusakan.
-  - Upload Foto Fisik Kerusakan dengan fitur *live image preview*.
-- [x] **Halaman Ringkasan & Daftar Laporan Masuk:**
-  - KPI Dashboard Bar (Total Laporan, Submitted, In Progress, Resolved).
-  - Tabel interaktif daftar keluhan dengan badge status dan prioritas.
-  - Filter pencarian instan berdasarkan nomor tiket, pelapor, dan kategori.
-  - Modal detail tiket lengkap dengan preview foto dan simulasi update status teknisi.
-- [x] **REST API & Postman Collection:** Siap divalidasi oleh QA Lead (`postman/Facility_Complaint_API.postman_collection.json`).
-- [x] **Automated Unit Tests & CI Action:** Siap diverifikasi oleh DevOps Lead (`.github/workflows/ci.yml`).
+For the initial class evaluation milestone on Tuesday, 24 November 2026, the following Sprint 1 increment is fully implemented and operational:
+
+- [x] **Facility Incident Reporting Form (Student Portal):**
+  - Fields: Reporter Name, Email/Contact, Campus Building/Zone, Room Details, Category Dropdown, Urgency Priority, and Detailed Incident Description.
+  - Photographic Evidence Upload with instant client-side image preview.
+- [x] **Complaints Directory & Administrative Dashboard (Staff Portal):**
+  - KPI Metric Cards (Total Complaints, Submitted, In Progress, Resolved).
+  - Search and filter bar by Ticket ID, reporter name, location, and status.
+  - Interactive ticket table with urgency badges and photographic thumbnails.
+  - Technician detail modal with live status transition capabilities (*Submitted* ➔ *In Progress* ➔ *Resolved*) and work notes.
+- [x] **Automated Ticket ID Generator:** Formats tickets deterministically as `FAC-2026-XXX`.
+- [x] **Standardized REST API:** Exposes endpoints for health check, complaint submission, list querying, and status updates.
+- [x] **Automated CI Workflow:** GitHub Actions multi-version matrix build testing verified with green checkmark status.
 
 ---
 
-## 💻 4. Panduan Menjalankan Aplikasi Secara Lokal
+## 💻 4. Local Development & Quick Start Guide
 
-### Prasyarat
-- [Node.js](https://nodejs.org/) versi 18 atau lebih baru.
-- [Git](https://git-scm.com/) terpasang di sistem operasi Anda.
+### Prerequisites
+- [Node.js](https://nodejs.org/) (Version 18.x, 20.x, or 22.x LTS)
+- [Git](https://git-scm.com/) installed on your operating system
 
-### Langkah Instalasi
-1. **Clone repositori:**
+### Installation & Execution
+1. **Clone the repository:**
    ```bash
-   git clone https://github.com/<username>/ispm-facility-complaint-system.git
+   git clone https://github.com/sheirenarnelia/ispm-facility-complaint-system.git
    cd ispm-facility-complaint-system
    ```
 
-2. **Install dependency:**
+2. **Install project dependencies:**
    ```bash
    npm install
    ```
 
-3. **Jalankan Automated Test (Memastikan sistem normal):**
+3. **Execute automated unit tests (Verifies system integrity):**
    ```bash
    npm test
    ```
 
-4. **Jalankan Server Aplikasi:**
+4. **Start the local server:**
    ```bash
    npm start
    ```
-   *Atau mode watch development:*
-   ```bash
-   npm run dev
-   ```
+   *(For development mode with auto-reload, use: `npm run dev`)*
 
-5. **Buka di Web Browser:**
-   Akses `http://localhost:3000` pada browser favorit Anda.
+5. **Access the application in your browser:**
+   Open `http://localhost:3000` in Google Chrome, Safari, or your preferred browser.
 
 ---
 
-## 📡 5. Spesifikasi REST API Endpoint
+## 📡 5. RESTful API Specification
 
-| Method | Endpoint | Deskripsi |
+| HTTP Method | Endpoint Path | Description |
 | :--- | :--- | :--- |
-| `GET` | `/api/health` | Health check status server (DevOps Monitoring) |
-| `GET` | `/api/complaints/stats/summary` | Mengambil agregat statistik total keluhan & status |
-| `GET` | `/api/complaints` | Mengambil seluruh daftar keluhan (mendukung query `?status=...&category=...&search=...`) |
-| `GET` | `/api/complaints/:id` | Mengambil data detail keluhan berdasarkan ID Tiket |
-| `POST`| `/api/complaints` | Mengirimkan formulir keluhan baru (mendukung upload file `photo`) |
-| `PATCH`| `/api/complaints/:id/status`| Mengubah status pengerjaan tiket (*Submitted / In Progress / Resolved*) |
+| `GET` | `/api/health` | Uptime and availability health check (DevOps monitoring) |
+| `GET` | `/api/complaints/stats/summary` | Retrieves aggregate metric counts across all ticket statuses |
+| `GET` | `/api/complaints` | Queries complaints list (Supports query parameters: `?status=...&category=...&search=...`) |
+| `GET` | `/api/complaints/:id` | Retrieves comprehensive incident details for a single Ticket ID |
+| `POST` | `/api/complaints` | Submits a new facility complaint (Supports multipart/form-data with image attachment) |
+| `PATCH` | `/api/complaints/:id/status` | Transitions ticket status (*Submitted*, *In Progress*, *Resolved*) and appends staff notes |
 
 ---
 
-## 🌿 6. Git Branching Strategy & Aturan Kolaborasi Tim
+## 🌿 6. Git Branching Strategy & Team Collaboration Policy
 
-Untuk menjaga kualitas kode dan kerapian repositori sesuai kaidah Agile & DevOps:
+To ensure high codebase quality, clean commit history, and adherence to Agile DevOps best practices:
 
-```
-main   ------------------------------------------------------------> (Production / Demo Dosen)
+```text
+main   ------------------------------------------------------------> [Production / Live Deployment]
           \                                                     /
-dev        ----------------------------------------------------> (Integration Branch)
+dev        ----------------------------------------------------> [Integration & CI Testing]
               \                       /       \             /
-feature        --[feature/form-ui]----         --[qa/tests]--
+feature        --[feature/sprint-1]---         --[feature/*]--
 ```
 
-### Aturan Wajib untuk Seluruh Anggota Tim:
-1. **Dilarang keras melakukan `push` langsung ke branch `main`!**
-2. Branch `main` hanya digunakan untuk versi stabil yang siap didemokan ke dosen saat evaluasi.
-3. Seluruh pengerjaan fitur baru dibuat di branch baru dari `dev`:
+### Team Branching Rules:
+1. **Direct commits to `main` are strictly forbidden!**
+2. The `main` branch is reserved exclusively for stable, reviewed release increments.
+3. All new feature work must branch off `dev`:
    ```bash
    git checkout dev
    git pull origin dev
-   git checkout -b feature/nama-fitur-kamu
+   git checkout -b feature/your-feature-name
    ```
-4. Setelah pengerjaan selesai, push branch kamu ke GitHub dan ajukan **Pull Request (PR)** yang mengarah ke branch `dev`.
-5. Pull Request wajib ditinjau dan lulus pengujian otomatis sebelum di-*merge*.
+4. Once work is complete, push your branch and open a **Pull Request (PR)** targeting `dev`.
+5. Every Pull Request must pass all automated GitHub Actions CI checks prior to review and merge.
 
 ---
 
-## 👥 7. Tim Pengembang (ISPM Project Team)
+## 👥 7. ISAPMD Project Team Roster & Roles
 
 - **Development Lead (PIC):** Sheiren Arnelia
-- **Product Owner / Business Analyst:** [Nama Anggota 1]
-- **Scrum Master / Project Coordinator:** [Nama Anggota 2]
-- **QA / UAT Lead:** [Nama Anggota 4]
-- **DevOps / Release Coordinator:** [Nama Anggota 5]
+- **Product Owner / Business Analyst:** Member 1
+- **Scrum Master / Project Coordinator:** Member 2
+- **QA / UAT Lead:** Member 3
+- **DevOps / Release Coordinator:** Member 4
