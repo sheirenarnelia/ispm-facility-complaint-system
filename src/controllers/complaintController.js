@@ -31,7 +31,7 @@ exports.getAllComplaints = (req, res) => {
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: 'Gagal mengambil data keluhan fasilitas.',
+      message: 'Failed to retrieve facility complaints.',
       error: error.message
     });
   }
@@ -45,7 +45,7 @@ exports.getComplaintById = (req, res) => {
     if (!complaint) {
       return res.status(404).json({
         success: false,
-        message: `Laporan dengan ID ${id} tidak ditemukan.`
+        message: `Complaint report with ID ${id} was not found.`
       });
     }
 
@@ -56,7 +56,7 @@ exports.getComplaintById = (req, res) => {
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: 'Gagal mengambil detail keluhan.',
+      message: 'Failed to retrieve complaint details.',
       error: error.message
     });
   }
@@ -66,15 +66,15 @@ exports.createComplaint = (req, res) => {
   try {
     const { reporterName, reporterEmail, building, room, category, priority, description } = req.body;
 
-    // Validasi field wajib
+    // Validate mandatory fields
     if (!reporterName || !building || !category || !description) {
       return res.status(400).json({
         success: false,
-        message: 'Field wajib belum lengkap: reporterName, building, category, dan description harus diisi.'
+        message: 'Mandatory fields missing: reporterName, building, category, and description are required.'
       });
     }
 
-    // URL foto (jika file diupload lewat multipart/form-data)
+    // Photo URL (uploaded via multipart/form-data or provided as string)
     let photoUrl = null;
     if (req.file) {
       photoUrl = `/uploads/${req.file.filename}`;
@@ -88,20 +88,20 @@ exports.createComplaint = (req, res) => {
       building: building.trim(),
       room: (room || '').trim(),
       category: category.trim(),
-      priority: priority || 'Sedang',
+      priority: priority || 'Medium',
       description: description.trim(),
       photoUrl
     });
 
     return res.status(201).json({
       success: true,
-      message: 'Laporan keluhan fasilitas berhasil dikirimkan!',
+      message: 'Facility complaint submitted successfully!',
       data: newComplaint
     });
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: 'Terjadi kesalahan saat memproses laporan.',
+      message: 'Internal server error while processing complaint submission.',
       error: error.message
     });
   }
@@ -110,33 +110,33 @@ exports.createComplaint = (req, res) => {
 exports.updateStatus = (req, res) => {
   try {
     const { id } = req.params;
-    const { status, staffNotes } = req.body;
+    const { status, staffNotes, assignedTechnician } = req.body;
 
     const validStatuses = ['Submitted', 'In Progress', 'Resolved', 'Rejected'];
     if (!status || !validStatuses.includes(status)) {
       return res.status(400).json({
         success: false,
-        message: `Status tidak valid. Pilih dari: ${validStatuses.join(', ')}`
+        message: `Invalid status. Choose from: ${validStatuses.join(', ')}`
       });
     }
 
-    const updated = ComplaintModel.updateStatus(id, status, staffNotes);
+    const updated = ComplaintModel.updateStatus(id, status, staffNotes, assignedTechnician);
     if (!updated) {
       return res.status(404).json({
         success: false,
-        message: `Laporan dengan ID ${id} tidak ditemukan.`
+        message: `Complaint ticket ${id} not found.`
       });
     }
 
     return res.status(200).json({
       success: true,
-      message: `Status laporan ${id} berhasil diperbarui menjadi ${status}.`,
+      message: `Status of ticket ${id} updated to ${status}.`,
       data: updated
     });
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: 'Gagal memperbarui status laporan.',
+      message: 'Failed to update complaint status.',
       error: error.message
     });
   }
@@ -152,7 +152,7 @@ exports.getStats = (req, res) => {
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: 'Gagal mengambil statistik.',
+      message: 'Failed to retrieve metrics statistics.',
       error: error.message
     });
   }

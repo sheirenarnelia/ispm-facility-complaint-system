@@ -8,14 +8,14 @@ const INITIAL_SEED_DATA = [
     id: "FAC-2026-001",
     reporterName: "Dimas Pratama",
     reporterEmail: "dimas.pratama@student.president.ac.id",
-    building: "Gedung A (Rektorat & Kelas Teori)",
-    room: "Ruang A-302",
-    category: "Kelistrikan & AC",
-    priority: "Mendesak",
-    description: "AC split di dinding utara mati total dan mengeluarkan suara berdengung keras. Suhu ruangan sangat panas mengganggu perkuliahan.",
+    building: "Building A (Rectorate & Lecture Halls)",
+    room: "Room A-302",
+    category: "Electricity & Air Conditioning",
+    priority: "Urgent",
+    description: "Wall-mounted AC unit shut down completely and is making loud buzzing noises. High room temperature is severely disrupting lectures.",
     photoUrl: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=600&auto=format&fit=crop&q=80",
     status: "In Progress",
-    staffNotes: "Teknisi AC dijadwalkan cek kapasitor & freon jam 14.00 WIB.",
+    staffNotes: "Maintenance technician scheduled to inspect capacitor and freon levels at 14:00.",
     createdAt: new Date(Date.now() - 24 * 3600 * 1000 * 2).toISOString(),
     updatedAt: new Date(Date.now() - 24 * 3600 * 1000).toISOString()
   },
@@ -23,11 +23,11 @@ const INITIAL_SEED_DATA = [
     id: "FAC-2026-002",
     reporterName: "Siti Rahmawati",
     reporterEmail: "siti.rahma@student.president.ac.id",
-    building: "Gedung B (Laboratorium Terpadu)",
-    room: "Lab Komputer 2 (B-105)",
-    category: "Peralatan IT & Proyektor",
-    priority: "Sedang",
-    description: "Proyektor HDMI sering berkedip dan warna tampilan berubah menjadi ungu/hijau saat dosen mempresentasikan materi.",
+    building: "Building B (Integrated Laboratories)",
+    room: "Computer Lab 2 (B-105)",
+    category: "IT Equipment & Projectors",
+    priority: "Medium",
+    description: "Ceiling HDMI projector flickers continuously and display output shifts to purple/green tint during lecture slides presentation.",
     photoUrl: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&auto=format&fit=crop&q=80",
     status: "Submitted",
     staffNotes: "",
@@ -38,14 +38,14 @@ const INITIAL_SEED_DATA = [
     id: "FAC-2026-003",
     reporterName: "Budi Santoso",
     reporterEmail: "budi.santoso@student.president.ac.id",
-    building: "Gedung C (Fasilitas Mahasiswa)",
-    room: "Toilet Pria Lantai 1",
-    category: "Sanitasi & Saluran Air",
-    priority: "Mendesak",
-    description: "Kran wastafel bocor deras tidak bisa ditutup rapat, air meluap ke lantai dan berpotensi licin.",
+    building: "Building C (Student Center & Cafeteria)",
+    room: "1st Floor Male Restroom",
+    category: "Sanitation & Plumbing",
+    priority: "Urgent",
+    description: "Washbasin faucet has a severe continuous leak that cannot be shut tightly. Water is overflowing onto the floor creating slip hazards.",
     photoUrl: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=600&auto=format&fit=crop&q=80",
     status: "Resolved",
-    staffNotes: "Kran telah diganti dengan valve baru oleh tim pemeliharaan sanitasi.",
+    staffNotes: "Faucet valve replaced with new heavy-duty shutoff valve by campus plumbing crew.",
     createdAt: new Date(Date.now() - 24 * 3600 * 1000 * 3).toISOString(),
     updatedAt: new Date(Date.now() - 24 * 3600 * 1000 * 1).toISOString()
   }
@@ -53,6 +53,10 @@ const INITIAL_SEED_DATA = [
 
 class ComplaintModel {
   static _ensureStorage() {
+    const dir = path.dirname(DATA_FILE);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
     if (!fs.existsSync(DATA_FILE)) {
       fs.writeFileSync(DATA_FILE, JSON.stringify(INITIAL_SEED_DATA, null, 2), 'utf-8');
     }
@@ -84,10 +88,11 @@ class ComplaintModel {
       building: complaintData.building,
       room: complaintData.room || "-",
       category: complaintData.category,
-      priority: complaintData.priority || "Sedang",
+      priority: complaintData.priority || "Medium",
       description: complaintData.description,
       photoUrl: complaintData.photoUrl || null,
       status: "Submitted",
+      assignedTechnician: complaintData.assignedTechnician || "Unassigned",
       staffNotes: "",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
@@ -98,7 +103,7 @@ class ComplaintModel {
     return record;
   }
 
-  static updateStatus(id, newStatus, staffNotes) {
+  static updateStatus(id, newStatus, staffNotes, assignedTechnician) {
     const list = this.getAll();
     const index = list.findIndex(item => item.id.toLowerCase() === id.toLowerCase());
     if (index === -1) return null;
@@ -106,6 +111,9 @@ class ComplaintModel {
     list[index].status = newStatus;
     if (staffNotes !== undefined) {
       list[index].staffNotes = staffNotes;
+    }
+    if (assignedTechnician !== undefined) {
+      list[index].assignedTechnician = assignedTechnician;
     }
     list[index].updatedAt = new Date().toISOString();
 

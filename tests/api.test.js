@@ -1,6 +1,5 @@
 const test = require('node:test');
 const assert = require('node:assert');
-const http = require('http');
 const app = require('../server');
 
 let server;
@@ -55,10 +54,10 @@ test('POST /api/complaints should create a new complaint record', async () => {
   const payload = {
     reporterName: 'Test Student Automated',
     reporterEmail: 'test.student@president.ac.id',
-    building: 'Gedung B (Laboratorium Terpadu)',
-    room: 'Lab Jaringan B-201',
-    category: 'Kelistrikan & AC',
-    priority: 'Mendesak',
+    building: 'Building B (Integrated Laboratories)',
+    room: 'Network Lab B-201',
+    category: 'Electricity & Air Conditioning',
+    priority: 'Urgent',
     description: 'Automated test complaint for CI/CD pipeline verification.'
   };
 
@@ -82,7 +81,7 @@ test('PATCH /api/complaints/:id/status should update status to In Progress', asy
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       status: 'In Progress',
-      staffNotes: 'Teknisi sudah di lokasi untuk pengecekan.'
+      staffNotes: 'Technician dispatched on-site for hardware inspection.'
     })
   });
 
