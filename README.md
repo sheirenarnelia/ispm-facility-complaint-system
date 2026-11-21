@@ -129,10 +129,10 @@ feature        --[feature/sprint-1]---         --[feature/*]--
 
 ## 👥 7. ISAPMD Project Team Roster & Roles
 
-| Role & Color Badge | Team Member | Primary Deliverables Ownership |
-| :---: | :--- | :--- |
-| 🟢 **Development Lead (PIC)** | **Sheiren Arnelia** | Architecture Helicopter View, Backend API, Working Prototype, Git & CI |
-| 🔵 **Product Owner / BA** | **James** | Business Process Document, Stakeholder Map, MoSCoW Backlog, Change Request |
-| 🟣 **Scrum Master / Coordinator** | **Pharezia Areta** | Project Charter, Trello Board, Sprint Ceremonies, Weekly Slide Decks |
-| 🟠 **QA / UAT Lead** | **Naw Ngone Thitsar** | Testing Scenarios Template, Defect Log, UAT Sign-Off, Postman API Testing |
-| 🔴 **DevOps / Release Lead** | **Khairunnisa Akifah** | CI Pipeline Evidence, Cloud Deployment (Vercel), Monitoring, User Manual |
+| Team Role | Member Name | Primary Deliverables Ownership |
+| :--- | :--- | :--- |
+| **Development Lead** | **Sheiren Arnelia** | Architecture Helicopter View, Backend API, Working Prototype, Git & CI |
+| **Product Owner / Business Analyst** | **James** | Business Process Document, Stakeholder Map, MoSCoW Backlog, Change Request |
+| **Scrum Master / Project Coordinator** | **Pharezia Areta** | Project Charter, Trello Board, Sprint Ceremonies, Weekly Slide Decks |
+| **QA / UAT Lead** | **Naw Ngone Thitsar** | Testing Scenarios Template, Defect Log, UAT Sign-Off, Postman API Testing |
+| **DevOps / Release Coordinator** | **Khairunnisa Akifah** | CI Pipeline Evidence, Cloud Deployment (Vercel), Monitoring, User Manual |
