@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistem Pelaporan Keluhan Fasilitas Kampus - Sprint 1</title>
+  <title>Campus Facility Complaint and Service Request System - Sprint 1</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -34,6 +34,7 @@
     .badge-submitted { background-color: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
     .badge-inprogress { background-color: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
     .badge-resolved { background-color: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+    .badge-rejected { background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
@@ -49,20 +50,20 @@
         </div>
         <div>
           <div class="flex items-center space-x-2">
-            <h1 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">Campus Facility Care</h1>
-            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-blue-100 text-blue-800">Sprint 1</span>
+            <h1 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">CampusFix</h1>
+            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-blue-100 text-blue-800">Sprint 1 MVP</span>
           </div>
-          <p class="text-xs text-slate-500 hidden sm:block">Facility Complaint & Service Request System - ISAPMD Project</p>
+          <p class="text-xs text-slate-500 hidden sm:block">Facility Complaint & Service Request System — ISAPMD Course</p>
         </div>
       </div>
 
       <!-- Navigation Tabs -->
       <div class="flex items-center space-x-2">
         <button id="navTabForm" onclick="switchView('form')" class="px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all bg-blue-600 text-white shadow-sm">
-          + Buat Laporan
+          + New Complaint
         </button>
         <button id="navTabList" onclick="switchView('list')" class="px-3.5 py-1.5 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all">
-          Daftar Laporan (<span id="navCount">0</span>)
+          Complaints Directory (<span id="navCount">0</span>)
         </button>
       </div>
     </div>
@@ -75,7 +76,7 @@
     <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
       <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs flex items-center justify-between">
         <div>
-          <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Total Laporan</p>
+          <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Total Complaints</p>
           <h3 id="statTotal" class="text-2xl font-bold text-slate-800 mt-0.5">0</h3>
         </div>
         <div class="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-600">
@@ -120,108 +121,108 @@
       <span id="toastMsg" class="text-sm font-medium"></span>
     </div>
 
-    <!-- VIEW 1: Form Pelaporan Keluhan (Sesuai Syarat Evaluasi Dosen 24 Nov) -->
+    <!-- VIEW 1: Form Pelaporan Keluhan (Reporter Portal) -->
     <section id="viewForm" class="max-w-3xl mx-auto">
       <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8">
         <div class="border-b border-slate-100 pb-5 mb-6">
-          <h2 class="text-xl font-bold text-slate-900">Form Pelaporan Keluhan Fasilitas</h2>
-          <p class="text-sm text-slate-500 mt-1">Laporkan kerusakan sarana prasarana kampus secara transparan dan terpantau cepat.</p>
+          <h2 class="text-xl font-bold text-slate-900">Facility Incident Reporting Form</h2>
+          <p class="text-sm text-slate-500 mt-1">Submit issues regarding campus infrastructure transparently for rapid maintenance resolution.</p>
         </div>
 
         <form id="complaintForm" class="space-y-5" onsubmit="submitComplaint(event)">
-          <!-- Row 1: Nama Pelapor & Email -->
+          <!-- Row 1: Reporter Name & Contact -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-                Nama Pelapor <span class="text-rose-500">*</span>
+                Reporter Full Name <span class="text-rose-500">*</span>
               </label>
-              <input type="text" name="reporterName" id="reporterName" required placeholder="Contoh: Sheiren Arnelia"
+              <input type="text" name="reporterName" id="reporterName" required placeholder="e.g. Sheiren Arnelia"
                 class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm outline-none transition-all">
             </div>
             <div>
               <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-                Email / No. WhatsApp
+                Email / WhatsApp Contact
               </label>
-              <input type="text" name="reporterEmail" id="reporterEmail" placeholder="Contoh: sheiren@student.president.ac.id"
+              <input type="text" name="reporterEmail" id="reporterEmail" placeholder="e.g. sheiren@student.president.ac.id"
                 class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm outline-none transition-all">
             </div>
           </div>
 
-          <!-- Row 2: Lokasi / Gedung & Ruangan -->
+          <!-- Row 2: Location / Building & Room -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-                Lokasi / Gedung <span class="text-rose-500">*</span>
+                Campus Building / Zone <span class="text-rose-500">*</span>
               </label>
               <select name="building" id="building" required
                 class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm outline-none bg-white transition-all">
-                <option value="">-- Pilih Gedung / Area --</option>
-                <option value="Gedung A (Rektorat & Kelas Teori)">Gedung A (Rektorat & Kelas Teori)</option>
-                <option value="Gedung B (Laboratorium Terpadu)">Gedung B (Laboratorium Terpadu)</option>
-                <option value="Gedung C (Fasilitas Mahasiswa & Kantin)">Gedung C (Fasilitas Mahasiswa & Kantin)</option>
-                <option value="Perpustakaan Pusat">Perpustakaan Pusat</option>
-                <option value="Auditorium / Lapangan Olahraga">Auditorium / Lapangan Olahraga</option>
-                <option value="Asrama Mahasiswa (Dormitory)">Asrama Mahasiswa (Dormitory)</option>
-                <option value="Area Parkir & Lingkungan Kampus">Area Parkir & Lingkungan Kampus</option>
+                <option value="">-- Select Building / Zone --</option>
+                <option value="Building A (Rectorate & Lecture Halls)">Building A (Rectorate & Lecture Halls)</option>
+                <option value="Building B (Integrated Laboratories)">Building B (Integrated Laboratories)</option>
+                <option value="Building C (Student Center & Cafeteria)">Building C (Student Center & Cafeteria)</option>
+                <option value="Central Library">Central Library</option>
+                <option value="Auditorium & Sports Complex">Auditorium & Sports Complex</option>
+                <option value="Student Dormitory">Student Dormitory</option>
+                <option value="Parking Facilities & Campus Grounds">Parking Facilities & Campus Grounds</option>
               </select>
             </div>
             <div>
               <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-                Detail Ruangan / Lokasi Spesifik
+                Specific Room / Location Details
               </label>
-              <input type="text" name="room" id="room" placeholder="Contoh: Ruang Kelas A-304 / Toilet Lt. 2"
+              <input type="text" name="room" id="room" placeholder="e.g. Lecture Room A-304 / 2nd Floor Restroom"
                 class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm outline-none transition-all">
             </div>
           </div>
 
-          <!-- Row 3: Kategori Kerusakan & Tingkat Urgensi -->
+          <!-- Row 3: Category & Urgency Priority -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-                Kategori Kerusakan <span class="text-rose-500">*</span>
+                Facility Category <span class="text-rose-500">*</span>
               </label>
               <select name="category" id="category" required
                 class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm outline-none bg-white transition-all">
-                <option value="">-- Pilih Kategori --</option>
-                <option value="Kelistrikan & AC">Kelistrikan & AC</option>
-                <option value="Peralatan IT & Proyektor">Peralatan IT & Proyektor</option>
-                <option value="Sanitasi & Saluran Air">Sanitasi & Saluran Air</option>
-                <option value="Perabotan & Fasilitas Fisik">Perabotan & Fasilitas Fisik (Meja, Kursi, Pintu)</option>
-                <option value="Kebersihan & Lingkungan">Kebersihan & Lingkungan</option>
-                <option value="Lainnya">Lainnya</option>
+                <option value="">-- Select Category --</option>
+                <option value="Electricity & Air Conditioning">Electricity & Air Conditioning</option>
+                <option value="IT Equipment & Projectors">IT Equipment & Projectors</option>
+                <option value="Sanitation & Plumbing">Sanitation & Plumbing</option>
+                <option value="Furniture & Fixtures">Furniture & Fixtures (Desks, Chairs, Doors)</option>
+                <option value="Cleanliness & Environment">Cleanliness & Environment</option>
+                <option value="Other Facilities">Other Facilities</option>
               </select>
             </div>
             <div>
               <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-                Tingkat Urgensi
+                Urgency Priority
               </label>
               <select name="priority" id="priority"
                 class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm outline-none bg-white transition-all">
-                <option value="Sedang" selected>Sedang (Normal - Ditangani 1-2 hari)</option>
-                <option value="Mendesak">Mendesak (Darurat / Menghentikan Kuliah)</option>
-                <option value="Rendah">Rendah (Penyempurnaan estetika/rutin)</option>
+                <option value="Medium" selected>Medium (Standard SLA: 1-2 Business Days)</option>
+                <option value="Urgent">Urgent (Emergency / Disrupting Lectures)</option>
+                <option value="Low">Low (Minor / Routine Maintenance)</option>
               </select>
             </div>
           </div>
 
-          <!-- Row 4: Deskripsi Kerusakan -->
+          <!-- Row 4: Issue Description -->
           <div>
             <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-              Deskripsi Kerusakan / Keluhan <span class="text-rose-500">*</span>
+              Incident Description & Details <span class="text-rose-500">*</span>
             </label>
-            <textarea name="description" id="description" rows="3" required placeholder="Jelaskan secara rinci kondisi fasilitas yang rusak, gejala, dan dampaknya..."
+            <textarea name="description" id="description" rows="3" required placeholder="Describe the facility issue, symptoms, and impact on academic activities in detail..."
               class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm outline-none transition-all"></textarea>
           </div>
 
-          <!-- Row 5: Upload Foto Bukti Kerusakan -->
+          <!-- Row 5: Photographic Evidence Upload -->
           <div>
             <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-              Upload Foto Bukti Fisik Kerusakan
+              Photographic Evidence Upload
             </label>
             <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 border-dashed rounded-xl hover:border-blue-400 transition-colors bg-slate-50/50">
               <div class="space-y-2 text-center">
                 <div id="previewContainer" class="hidden mb-3">
-                  <img id="imagePreview" src="" alt="Preview Bukti" class="max-h-48 rounded-lg mx-auto shadow-sm border border-slate-200">
+                  <img id="imagePreview" src="" alt="Evidence Preview" class="max-h-48 rounded-lg mx-auto shadow-sm border border-slate-200">
                 </div>
                 <div id="uploadPrompt" class="flex flex-col items-center">
                   <svg class="mx-auto h-10 w-10 text-slate-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
@@ -229,12 +230,12 @@
                   </svg>
                   <div class="flex text-sm text-slate-600 mt-2">
                     <label for="photoFile" class="relative cursor-pointer bg-white rounded-md font-semibold text-blue-600 hover:text-blue-500 focus-within:outline-none">
-                      <span>Pilih file gambar</span>
+                      <span>Choose image file</span>
                       <input id="photoFile" name="photo" type="file" accept="image/*" class="sr-only" onchange="previewImage(event)">
                     </label>
-                    <p class="pl-1">atau drag & drop</p>
+                    <p class="pl-1">or drag & drop</p>
                   </div>
-                  <p class="text-xs text-slate-500 mt-1">PNG, JPG, WEBP hingga 5MB</p>
+                  <p class="text-xs text-slate-500 mt-1">PNG, JPG, WEBP up to 2MB (CAPA boundary limit)</p>
                 </div>
               </div>
             </div>
@@ -246,7 +247,7 @@
               Reset Form
             </button>
             <button type="submit" id="btnSubmit" class="px-6 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow-md shadow-blue-500/20 transition-all flex items-center">
-              <span>Kirimkan Keluhan</span>
+              <span>Submit Complaint</span>
               <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
             </button>
           </div>
@@ -254,30 +255,32 @@
       </div>
     </section>
 
-    <!-- VIEW 2: Halaman Sederhana Daftar Laporan Masuk (Sesuai Syarat Evaluasi Dosen 24 Nov) -->
+    <!-- VIEW 2: Complaints Directory / Admin Dashboard -->
     <section id="viewList" class="hidden space-y-5">
       <!-- Search and Filter Bar -->
       <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex flex-col md:flex-row gap-3 items-center justify-between">
         <div class="relative w-full md:w-80">
           <svg class="w-4 h-4 text-slate-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-          <input type="text" id="searchInput" oninput="applyFilters()" placeholder="Cari ID tiket, pelapor, lokasi..."
+          <input type="text" id="searchInput" oninput="applyFilters()" placeholder="Search Ticket ID, reporter, location..."
             class="w-full pl-9 pr-3.5 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
         </div>
 
         <div class="flex flex-wrap w-full md:w-auto gap-2 items-center">
           <select id="filterCategory" onchange="applyFilters()" class="text-xs sm:text-sm px-3 py-2 rounded-lg border border-slate-300 bg-white outline-none">
-            <option value="all">Semua Kategori</option>
-            <option value="Kelistrikan & AC">Kelistrikan & AC</option>
-            <option value="Peralatan IT & Proyektor">Peralatan IT & Proyektor</option>
-            <option value="Sanitasi & Saluran Air">Sanitasi & Saluran Air</option>
-            <option value="Perabotan & Fasilitas Fisik">Perabotan & Fasilitas Fisik</option>
+            <option value="all">All Categories</option>
+            <option value="Electricity & Air Conditioning">Electricity & Air Conditioning</option>
+            <option value="IT Equipment & Projectors">IT Equipment & Projectors</option>
+            <option value="Sanitation & Plumbing">Sanitation & Plumbing</option>
+            <option value="Furniture & Fixtures">Furniture & Fixtures</option>
+            <option value="Cleanliness & Environment">Cleanliness & Environment</option>
+            <option value="Other Facilities">Other Facilities</option>
           </select>
 
           <select id="filterStatus" onchange="applyFilters()" class="text-xs sm:text-sm px-3 py-2 rounded-lg border border-slate-300 bg-white outline-none">
-            <option value="all">Semua Status</option>
-            <option value="Submitted">Submitted (Baru)</option>
-            <option value="In Progress">In Progress (Dikerjakan)</option>
-            <option value="Resolved">Resolved (Selesai)</option>
+            <option value="all">All Statuses</option>
+            <option value="Submitted">Submitted</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Resolved">Resolved</option>
           </select>
 
           <button onclick="loadComplaints()" title="Refresh Data" class="p-2 rounded-lg border border-slate-300 hover:bg-slate-50 text-slate-600 transition-all">
@@ -292,13 +295,13 @@
           <table class="w-full text-left border-collapse text-sm">
             <thead>
               <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                <th class="py-3.5 px-4">ID Tiket</th>
-                <th class="py-3.5 px-4">Pelapor</th>
-                <th class="py-3.5 px-4">Lokasi & Gedung</th>
-                <th class="py-3.5 px-4">Kategori & Urgensi</th>
+                <th class="py-3.5 px-4">Ticket ID</th>
+                <th class="py-3.5 px-4">Reporter</th>
+                <th class="py-3.5 px-4">Location & Building</th>
+                <th class="py-3.5 px-4">Category & Urgency</th>
                 <th class="py-3.5 px-4">Status</th>
-                <th class="py-3.5 px-4 text-center">Foto</th>
-                <th class="py-3.5 px-4 text-right">Aksi</th>
+                <th class="py-3.5 px-4 text-center">Photo</th>
+                <th class="py-3.5 px-4 text-right">Actions</th>
               </tr>
             </thead>
             <tbody id="complaintsTableBody" class="divide-y divide-slate-100">
@@ -310,21 +313,21 @@
           <svg class="mx-auto h-12 w-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
           </svg>
-          <h3 class="mt-2 text-sm font-semibold text-slate-800">Belum ada keluhan yang cocok</h3>
-          <p class="mt-1 text-xs text-slate-500">Silakan ubah filter pencarian atau buat laporan baru.</p>
+          <h3 class="mt-2 text-sm font-semibold text-slate-800">No complaints matching your criteria</h3>
+          <p class="mt-1 text-xs text-slate-500">Please adjust your search filters or submit a new complaint.</p>
         </div>
       </div>
     </section>
 
   </main>
 
-  <!-- Modal Detail & Update Status (Simulasi Tindakan Staff Fasilitas Kampus) -->
+  <!-- Modal Detail & Update Status (Simulates Facility Maintenance Staff Dashboard) -->
   <div id="detailModal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200">
       <div class="p-6 border-b border-slate-100 flex items-center justify-between">
         <div>
           <span id="modalTicketId" class="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-2 py-0.5 rounded"></span>
-          <h3 id="modalTitle" class="text-lg font-bold text-slate-900 mt-1">Detail Laporan Keluhan</h3>
+          <h3 id="modalTitle" class="text-lg font-bold text-slate-900 mt-1">Complaint Ticket Details</h3>
         </div>
         <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -334,36 +337,36 @@
       <div class="p-6 space-y-4 text-sm">
         <div class="grid grid-cols-2 gap-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200/60">
           <div>
-            <p class="text-xs text-slate-500">Nama Pelapor</p>
+            <p class="text-xs text-slate-500">Reporter Name</p>
             <p id="modalReporter" class="font-semibold text-slate-800 mt-0.5">-</p>
           </div>
           <div>
-            <p class="text-xs text-slate-500">Kontak Pelapor</p>
+            <p class="text-xs text-slate-500">Contact</p>
             <p id="modalEmail" class="font-semibold text-slate-800 mt-0.5">-</p>
           </div>
           <div>
-            <p class="text-xs text-slate-500">Lokasi / Gedung</p>
+            <p class="text-xs text-slate-500">Building / Zone</p>
             <p id="modalBuilding" class="font-semibold text-slate-800 mt-0.5">-</p>
           </div>
           <div>
-            <p class="text-xs text-slate-500">Ruangan</p>
+            <p class="text-xs text-slate-500">Room / Area</p>
             <p id="modalRoom" class="font-semibold text-slate-800 mt-0.5">-</p>
           </div>
         </div>
 
         <div>
-          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Deskripsi Kerusakan:</p>
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Incident Description:</p>
           <p id="modalDescription" class="mt-1 p-3 bg-slate-50 rounded-lg text-slate-700 leading-relaxed border border-slate-200/60"></p>
         </div>
 
         <div id="modalPhotoWrapper" class="hidden">
-          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Foto Bukti Kerusakan:</p>
-          <img id="modalPhoto" src="" alt="Bukti Foto" class="rounded-xl border border-slate-200 max-h-56 w-full object-cover shadow-xs">
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Photographic Evidence:</p>
+          <img id="modalPhoto" src="" alt="Evidence Photo" class="rounded-xl border border-slate-200 max-h-56 w-full object-cover shadow-xs">
         </div>
 
-        <!-- Bagian Update Status (Demo Hak Akses Staff Fasilitas) -->
+        <!-- Status Transition Action Panel -->
         <div class="pt-3 border-t border-slate-100">
-          <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Simulasi Update Status Petugas Fasilitas:</h4>
+          <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Technician Status Transition:</h4>
           <div class="space-y-3">
             <div class="grid grid-cols-3 gap-2">
               <button onclick="updateStatus('Submitted')" class="px-3 py-1.5 text-xs font-semibold rounded-lg border border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100 transition-all">
@@ -377,12 +380,12 @@
               </button>
             </div>
             <div>
-              <label class="block text-xs text-slate-500 mb-1">Catatan Tindakan Teknisi / Staff:</label>
-              <input type="text" id="modalStaffNotes" placeholder="Misal: Teknisi telah mengganti komponen rusak..."
+              <label class="block text-xs text-slate-500 mb-1">Staff / Technician Resolution Notes:</label>
+              <input type="text" id="modalStaffNotes" placeholder="e.g. Maintenance technician dispatched and replaced faulty component..."
                 class="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-blue-500">
             </div>
             <button onclick="saveStatusUpdate()" class="w-full py-2 bg-slate-900 text-white rounded-lg text-xs font-semibold hover:bg-slate-800 transition-all">
-              Simpan Perubahan Status
+              Save Status Transition
             </button>
           </div>
         </div>

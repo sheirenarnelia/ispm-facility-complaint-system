@@ -80,19 +80,19 @@ function renderTable(complaints) {
     if (c.status === 'Resolved') statusClass = 'badge-resolved';
 
     let priorityBadge = '';
-    if (c.priority === 'Mendesak') {
-      priorityBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-700">Mendesak</span>';
-    } else if (c.priority === 'Sedang') {
-      priorityBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-amber-100 text-amber-700">Sedang</span>';
+    if (c.priority === 'Urgent' || c.priority === 'Mendesak') {
+      priorityBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-700">Urgent</span>';
+    } else if (c.priority === 'Medium' || c.priority === 'Sedang') {
+      priorityBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-amber-100 text-amber-700">Medium</span>';
     } else {
-      priorityBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600">Rendah</span>';
+      priorityBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600">Low</span>';
     }
 
     const photoThumb = c.photoUrl
       ? `<img src="${c.photoUrl}" alt="Photo" class="w-10 h-10 object-cover rounded-lg border border-slate-200 cursor-pointer mx-auto shadow-xs hover:scale-105 transition-transform" onclick="openDetail('${c.id}')">`
-      : `<span class="text-xs text-slate-400 italic">-</span>`;
+      : `<span class="text-xs text-slate-400 italic">None</span>`;
 
-    const formattedDate = new Date(c.createdAt).toLocaleDateString('id-ID', {
+    const formattedDate = new Date(c.createdAt).toLocaleDateString('en-US', {
       day: 'numeric',
       month: 'short',
       year: 'numeric'
@@ -126,7 +126,7 @@ function renderTable(complaints) {
         </td>
         <td class="py-3.5 px-4 text-right">
           <button onclick="openDetail('${c.id}')" class="px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:border-slate-400 transition-all">
-            Detail / Status
+            Details / Status
           </button>
         </td>
       </tr>
@@ -181,7 +181,7 @@ async function submitComplaint(e) {
   const btn = document.getElementById('btnSubmit');
 
   btn.disabled = true;
-  btn.innerHTML = `<span class="animate-spin mr-2">&#9696;</span> Mengirim...`;
+  btn.innerHTML = `<span class="animate-spin mr-2">&#9696;</span> Submitting...`;
 
   try {
     const formData = new FormData(form);
@@ -193,7 +193,7 @@ async function submitComplaint(e) {
 
     const result = await res.json();
     if (result.success) {
-      showToast(`Sukses! Tiket ${result.data.id} berhasil diajukan.`);
+      showToast(`Success! Complaint ticket ${result.data.id} has been submitted.`);
       form.reset();
       resetImagePreview();
       loadStats();
@@ -201,13 +201,13 @@ async function submitComplaint(e) {
         switchView('list');
       }, 1000);
     } else {
-      showToast(result.message || 'Gagal mengirim keluhan.', 'error');
+      showToast(result.message || 'Failed to submit complaint.', 'error');
     }
   } catch (err) {
-    showToast('Terjadi kesalahan jaringan.', 'error');
+    showToast('Network error while submitting complaint.', 'error');
   } finally {
     btn.disabled = false;
-    btn.innerHTML = `<span>Kirimkan Keluhan</span><svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>`;
+    btn.innerHTML = `<span>Submit Complaint</span><svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>`;
   }
 }
 
@@ -247,11 +247,12 @@ function closeModal() {
 
 function updateStatus(status) {
   currentSelectedStatus = status;
-  showToast(`Status dipilih: ${status}`);
+  showToast(`Selected status: ${status}`);
 }
 
 async function saveStatusUpdate() {
   if (!activeTicketId) return;
+
   const staffNotes = document.getElementById('modalStaffNotes').value;
 
   try {
@@ -264,29 +265,35 @@ async function saveStatusUpdate() {
       })
     });
 
-    const json = await res.json();
-    if (json.success) {
-      showToast(`Status tiket ${activeTicketId} diperbarui!`);
+    const result = await res.json();
+    if (result.success) {
+      showToast(`Ticket ${activeTicketId} status updated to ${currentSelectedStatus}!`);
       closeModal();
       loadComplaints();
     } else {
-      showToast(json.message || 'Gagal mengubah status', 'error');
+      showToast(result.message || 'Failed to update status.', 'error');
     }
   } catch (err) {
-    showToast('Terjadi kesalahan jaringan.', 'error');
+    showToast('Failed to connect to server.', 'error');
   }
 }
 
 // Toast notification helper
-function showToast(message, type = 'success') {
+function showToast(msg, type = 'success') {
   const toast = document.getElementById('toast');
-  const icon = document.getElementById('toastIcon');
-  const msg = document.getElementById('toastMsg');
+  const toastMsg = document.getElementById('toastMsg');
+  const toastIcon = document.getElementById('toastIcon');
 
-  msg.innerText = message;
-  icon.innerHTML = type === 'success' ? '✅' : '⚠️';
+  toastMsg.innerText = msg;
+  if (type === 'error') {
+    toastIcon.innerHTML = '&#9888;';
+    toast.className = 'fixed bottom-6 right-6 max-w-sm bg-rose-600 text-white px-5 py-3.5 rounded-xl shadow-xl z-50 flex items-center space-x-3 transition-opacity';
+  } else {
+    toastIcon.innerHTML = '&#10003;';
+    toast.className = 'fixed bottom-6 right-6 max-w-sm bg-slate-900 text-white px-5 py-3.5 rounded-xl shadow-xl z-50 flex items-center space-x-3 transition-opacity';
+  }
+
   toast.classList.remove('hidden');
-
   setTimeout(() => {
     toast.classList.add('hidden');
   }, 3500);
