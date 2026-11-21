@@ -51,7 +51,7 @@
         <div>
           <div class="flex items-center space-x-2">
             <h1 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">CampusFix</h1>
-            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-blue-100 text-blue-800">Sprint 1 MVP</span>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>v1.1.0 Sprint 2 (CR Implemented)</span>
           </div>
           <p class="text-xs text-slate-500 hidden sm:block">Facility Complaint & Service Request System — ISAPMD Course</p>
         </div>
@@ -283,10 +283,34 @@
             <option value="Resolved">Resolved</option>
           </select>
 
+          <button onclick="exportToCSV()" title="Export Maintenance Report (CSV)" class="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold shadow-xs transition-all">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            <span>Export CSV</span>
+          </button>
+
           <button onclick="loadComplaints()" title="Refresh Data" class="p-2 rounded-lg border border-slate-300 hover:bg-slate-50 text-slate-600 transition-all">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
           </button>
         </div>
+      </div>
+
+      <!-- Sprint 2 Change Request: Emergency Hazard Alert Banner -->
+      <div id="emergencyAlertBanner" class="bg-rose-50 border border-rose-200 rounded-xl p-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-rose-900 shadow-xs">
+        <div class="flex items-center gap-3">
+          <span class="flex h-3 w-3 relative">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-3 w-3 bg-rose-600"></span>
+          </span>
+          <div>
+            <p class="text-xs font-bold uppercase tracking-wider text-rose-700">Sprint 2 Emergency Hazard Triage</p>
+            <p class="text-sm font-semibold text-slate-800">
+              🚨 Active Urgent Hazards requiring immediate dispatch: <span id="urgentCount" class="font-bold text-rose-600">3 Tickets</span>
+            </p>
+          </div>
+        </div>
+        <button onclick="filterByUrgentOnly()" class="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-semibold shadow-xs transition-all">
+          Filter Urgent Hazards
+        </button>
       </div>
 
       <!-- Complaints Table / List -->
@@ -300,6 +324,7 @@
                 <th class="py-3.5 px-4">Location & Building</th>
                 <th class="py-3.5 px-4">Category & Urgency</th>
                 <th class="py-3.5 px-4">Status</th>
+                <th class="py-3.5 px-4">Assigned Technician</th>
                 <th class="py-3.5 px-4 text-center">Photo</th>
                 <th class="py-3.5 px-4 text-right">Actions</th>
               </tr>
@@ -378,6 +403,17 @@
               <button onclick="updateStatus('Resolved')" class="px-3 py-1.5 text-xs font-semibold rounded-lg border border-emerald-300 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 transition-all">
                 Resolved
               </button>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Assigned Maintenance Technician:</label>
+              <select id="modalTechnician" class="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                <option value="Unassigned">⚠️ Unassigned (Pending Dispatch)</option>
+                <option value="Pak Joko (Electrical Crew)">⚡ Pak Joko (Electrical Crew)</option>
+                <option value="Budi Santoso (Plumbing Specialist)">🔧 Budi Santoso (Plumbing Specialist)</option>
+                <option value="Ahmad Ridwan (Furniture Specialist)">🪑 Ahmad Ridwan (Furniture Specialist)</option>
+                <option value="Irwan Pratama (HVAC Specialist)">❄️ Irwan Pratama (HVAC Specialist)</option>
+                <option value="Doni Kusuma (IT & Audio-Visual)">🖥️ Doni Kusuma (IT & Audio-Visual)</option>
+              </select>
             </div>
             <div>
               <label class="block text-xs text-slate-500 mb-1">Staff / Technician Resolution Notes:</label>
