@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
  
  const urlParams = new URLSearchParams(window.location.search);
  if (urlParams.get('auth') === 'modal') {
+  switchView('form');
   openStaffAuthModal();
  } else if (urlParams.get('view') === 'tracker') {
   switchView('tracker');
@@ -18,8 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
   sessionStorage.setItem('campusfix_staff_auth', 'true');
   updateNavbarAuthState();
   switchView('list');
- } else if (isStaffAuthenticated) {
-  loadComplaints();
+ } else {
+  switchView('form');
  }
 });
 
