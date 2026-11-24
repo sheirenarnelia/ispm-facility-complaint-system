@@ -1,34 +1,242 @@
 let currentComplaints = [];
 let activeTicketId = null;
 let currentSelectedStatus = null;
+let latestCreatedTicket = null;
 
 document.addEventListener('DOMContentLoaded', () => {
  loadStats();
  loadComplaints();
- switchView('list');
 });
 
-// Switch between Form and List tabs
+// Switch between Form, Tracker, and Staff List views
 function switchView(viewName) {
  const formView = document.getElementById('viewForm');
+ const trackerView = document.getElementById('viewTracker');
  const listView = document.getElementById('viewList');
  const navTabForm = document.getElementById('navTabForm');
+ const navTabTracker = document.getElementById('navTabTracker');
  const navTabList = document.getElementById('navTabList');
 
+ const inactiveTabClass = 'px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all flex items-center gap-1.5';
+ const activeTabClass = 'px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-white text-slate-800 shadow-xs flex items-center gap-1.5';
+ const staffActiveTabClass = 'px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-slate-900 text-white shadow-xs flex items-center gap-1.5';
+ const staffInactiveTabClass = 'px-3 py-1.5 rounded-lg text-xs font-bold text-slate-700 hover:bg-white hover:text-slate-900 transition-all flex items-center gap-1.5';
+
+ if (formView) formView.classList.add('hidden');
+ if (trackerView) trackerView.classList.add('hidden');
+ if (listView) listView.classList.add('hidden');
+
+ if (navTabForm) navTabForm.className = inactiveTabClass;
+ if (navTabTracker) navTabTracker.className = inactiveTabClass;
+ if (navTabList) navTabList.className = staffInactiveTabClass;
+
  if (viewName === 'form') {
-  formView.classList.remove('hidden');
-  listView.classList.add('hidden');
-
-  navTabForm.className = 'px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all bg-blue-600 text-white shadow-sm';
-  navTabList.className = 'px-3.5 py-1.5 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all';
+  if (formView) formView.classList.remove('hidden');
+  if (navTabForm) navTabForm.className = activeTabClass;
+ } else if (viewName === 'tracker') {
+  if (trackerView) trackerView.classList.remove('hidden');
+  if (navTabTracker) navTabTracker.className = activeTabClass;
+  if (!activeTicketId && currentComplaints.length > 0) {
+   showTicketInTracker(currentComplaints[0].id, currentComplaints[0]);
+  }
  } else {
-  formView.classList.add('hidden');
-  listView.classList.remove('hidden');
-
-  navTabList.className = 'px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all bg-blue-600 text-white shadow-sm';
-  navTabForm.className = 'px-3.5 py-1.5 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all';
+  if (listView) listView.classList.remove('hidden');
+  if (navTabList) navTabList.className = staffActiveTabClass;
   loadComplaints();
  }
+}
+
+// Public Ticket Tracker Logic (Reporter Persona)
+function showTicketInTracker(ticketId, data) {
+ if (!data && currentComplaints.length > 0) {
+  data = currentComplaints.find(c => c.id === ticketId);
+ }
+ if (!data) {
+  data = {
+   id: ticketId || 'FAC-2026-013',
+   reporterName: 'Sheiren Arnelia',
+   category: 'Furniture & Fixtures',
+   building: 'Building A (Rectorate & Lecture Halls)',
+   room: 'Room A324',
+   description: "the door can't be open",
+   status: 'Submitted',
+   createdAt: new Date().toISOString()
+  };
+ }
+
+ activeTicketId = data.id;
+
+ const elemId = document.getElementById('trackerTicketId');
+ const elemBadge = document.getElementById('trackerStatusBadge');
+ const elemCat = document.getElementById('trackerCategoryTitle');
+ const elemLoc = document.getElementById('trackerLocationText');
+ const elemRep = document.getElementById('trackerReporterName');
+ const elemDesc = document.getElementById('trackerDescriptionText');
+ const elemSearch = document.getElementById('trackerSearchInput');
+
+ if (elemId) elemId.innerText = data.id;
+ if (elemCat) elemCat.innerText = data.category + ' Incident';
+ if (elemLoc) elemLoc.innerText = `${data.building} — ${data.room || 'General Area'}`;
+ if (elemRep) elemRep.innerText = data.reporterName;
+ if (elemDesc) elemDesc.innerText = `"${data.description}"`;
+ if (elemSearch) elemSearch.value = data.id;
+
+ if (elemBadge) {
+  if (data.status === 'Submitted') {
+   elemBadge.className = 'px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300';
+   elemBadge.innerText = 'Submitted (Pending Review)';
+  } else if (data.status === 'In Progress') {
+   elemBadge.className = 'px-2.5 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800 border border-blue-300';
+   elemBadge.innerText = 'In Progress (Technician Active)';
+  } else if (data.status === 'Resolved') {
+   elemBadge.className = 'px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300';
+   elemBadge.innerText = 'Resolved (Completed)';
+  }
+ }
+
+ updateTrackerStepper(data.status, data.technician);
+
+ const formView = document.getElementById('viewForm');
+ const trackerView = document.getElementById('viewTracker');
+ const listView = document.getElementById('viewList');
+ const navTabForm = document.getElementById('navTabForm');
+ const navTabTracker = document.getElementById('navTabTracker');
+ const navTabList = document.getElementById('navTabList');
+
+ if (formView) formView.classList.add('hidden');
+ if (listView) listView.classList.add('hidden');
+ if (trackerView) trackerView.classList.remove('hidden');
+
+ if (navTabTracker) navTabTracker.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-white text-slate-800 shadow-xs flex items-center gap-1.5';
+ if (navTabForm) navTabForm.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all flex items-center gap-1.5';
+ if (navTabList) navTabList.className = 'px-3 py-1.5 rounded-lg text-xs font-bold text-slate-700 hover:bg-white hover:text-slate-900 transition-all flex items-center gap-1.5';
+}
+
+function updateTrackerStepper(status, technician) {
+ const dot1 = document.getElementById('stepDot1');
+ const dot2 = document.getElementById('stepDot2');
+ const dot3 = document.getElementById('stepDot3');
+ const dot4 = document.getElementById('stepDot4');
+ const badge2 = document.getElementById('stepBadge2');
+ const badge3 = document.getElementById('stepBadge3');
+ const badge4 = document.getElementById('stepBadge4');
+
+ const checkIcon = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>';
+
+ if (dot1) {
+  dot1.className = 'w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-bold shadow-sm ring-4 ring-emerald-100 shrink-0 -ml-[15px] sm:-ml-[17px] z-10';
+  dot1.innerHTML = checkIcon;
+ }
+
+ if (status === 'Submitted') {
+  if (dot2) {
+   dot2.className = 'w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold shadow-sm ring-4 ring-blue-100 shrink-0 -ml-[15px] sm:-ml-[17px] z-10 animate-pulse';
+   dot2.innerText = '2';
+  }
+  if (badge2) {
+   badge2.className = 'inline-block mt-1 text-[11px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded';
+   badge2.innerText = 'In Triage Review';
+  }
+  if (dot3) {
+   dot3.className = 'w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-xs font-bold shrink-0 -ml-[15px] sm:-ml-[17px] z-10';
+   dot3.innerText = '3';
+  }
+  if (badge3) {
+   badge3.className = 'inline-block mt-1 text-[11px] font-semibold text-slate-400 bg-slate-100 px-2 py-0.5 rounded';
+   badge3.innerText = 'Pending Dispatch';
+  }
+  if (dot4) {
+   dot4.className = 'w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-xs font-bold shrink-0 -ml-[15px] sm:-ml-[17px] z-10';
+   dot4.innerText = '4';
+  }
+  if (badge4) {
+   badge4.className = 'inline-block mt-1 text-[11px] font-semibold text-slate-400 bg-slate-100 px-2 py-0.5 rounded';
+   badge4.innerText = 'Pending Completion';
+  }
+ } else if (status === 'In Progress') {
+  if (dot2) {
+   dot2.className = 'w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-bold shadow-sm ring-4 ring-emerald-100 shrink-0 -ml-[15px] sm:-ml-[17px] z-10';
+   dot2.innerHTML = checkIcon;
+  }
+  if (badge2) {
+   badge2.className = 'inline-block mt-1 text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded';
+   badge2.innerText = 'Triage Completed';
+  }
+  if (dot3) {
+   dot3.className = 'w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold shadow-sm ring-4 ring-blue-100 shrink-0 -ml-[15px] sm:-ml-[17px] z-10 animate-pulse';
+   dot3.innerText = '3';
+  }
+  if (badge3) {
+   badge3.className = 'inline-block mt-1 text-[11px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded';
+   badge3.innerText = technician && technician !== 'Unassigned' ? `Assigned: ${technician}` : 'Technician Dispatched';
+  }
+  if (dot4) {
+   dot4.className = 'w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-xs font-bold shrink-0 -ml-[15px] sm:-ml-[17px] z-10';
+   dot4.innerText = '4';
+  }
+  if (badge4) {
+   badge4.className = 'inline-block mt-1 text-[11px] font-semibold text-slate-400 bg-slate-100 px-2 py-0.5 rounded';
+   badge4.innerText = 'Repairs in Progress';
+  }
+ } else if (status === 'Resolved') {
+  if (dot2) {
+   dot2.className = 'w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-bold shadow-sm ring-4 ring-emerald-100 shrink-0 -ml-[15px] sm:-ml-[17px] z-10';
+   dot2.innerHTML = checkIcon;
+  }
+  if (badge2) badge2.innerText = 'Triage Completed';
+  if (dot3) {
+   dot3.className = 'w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-bold shadow-sm ring-4 ring-emerald-100 shrink-0 -ml-[15px] sm:-ml-[17px] z-10';
+   dot3.innerHTML = checkIcon;
+  }
+  if (badge3) badge3.innerText = technician ? `Completed by: ${technician}` : 'Repairs Completed';
+  if (dot4) {
+   dot4.className = 'w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-bold shadow-sm ring-4 ring-emerald-100 shrink-0 -ml-[15px] sm:-ml-[17px] z-10';
+   dot4.innerHTML = checkIcon;
+  }
+  if (badge4) {
+   badge4.className = 'inline-block mt-1 text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded';
+   badge4.innerText = 'Resolved & Verified';
+  }
+ }
+}
+
+function searchTrackerTicket() {
+ const input = document.getElementById('trackerSearchInput');
+ const query = (input ? input.value : '').trim().toUpperCase();
+ if (!query) {
+  showToast('Please enter a Ticket ID to track.', 'error');
+  return;
+ }
+ const found = currentComplaints.find(c => c.id.toUpperCase() === query);
+ if (found) {
+  showTicketInTracker(found.id, found);
+  showToast(`Found tracking record for ${found.id}`);
+ } else {
+  showToast(`Ticket ${query} not found in live registry.`, 'error');
+ }
+}
+
+// Modal control functions
+function closeSuccessModal() {
+ const modal = document.getElementById('submissionSuccessModal');
+ if (modal) modal.classList.add('hidden');
+}
+
+function goToTrackerFromModal() {
+ closeSuccessModal();
+ if (latestCreatedTicket) {
+  showTicketInTracker(latestCreatedTicket.id, latestCreatedTicket);
+ } else {
+  switchView('tracker');
+ }
+}
+
+function submitAnotherFromModal() {
+ closeSuccessModal();
+ const form = document.getElementById('complaintForm');
+ if (form) form.reset();
+ resetImagePreview();
+ switchView('form');
 }
 
 // Fetch stats summary
@@ -210,13 +418,24 @@ async function submitComplaint(e) {
 
   const result = await res.json();
   if (result.success) {
+   latestCreatedTicket = result.data;
    showToast(`Success! Complaint ticket ${result.data.id} has been submitted.`);
+
+   const popupModal = document.getElementById('submissionSuccessModal');
+   if (popupModal) {
+    if (document.getElementById('popupTicketId')) document.getElementById('popupTicketId').innerText = result.data.id;
+    if (document.getElementById('popupReporter')) document.getElementById('popupReporter').innerText = result.data.reporterName || 'Reporter';
+    if (document.getElementById('popupCategory')) document.getElementById('popupCategory').innerText = result.data.category || 'Facility Issue';
+    if (document.getElementById('popupLocation')) document.getElementById('popupLocation').innerText = `${result.data.building || ''}${result.data.room ? ', ' + result.data.room : ''}`;
+    if (document.getElementById('popupDescription')) document.getElementById('popupDescription').innerText = `"${result.data.description || ''}"`;
+    popupModal.classList.remove('hidden');
+   } else {
+    showTicketInTracker(result.data.id, result.data);
+   }
+
    form.reset();
    resetImagePreview();
    loadStats();
-   setTimeout(() => {
-    switchView('list');
-   }, 1000);
   } else {
    showToast(result.message || 'Failed to submit complaint.', 'error');
   }
