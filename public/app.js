@@ -7,7 +7,18 @@ let isStaffAuthenticated = sessionStorage.getItem('campusfix_staff_auth') === 't
 document.addEventListener('DOMContentLoaded', () => {
  updateNavbarAuthState();
  loadStats();
- if (isStaffAuthenticated) {
+ 
+ const urlParams = new URLSearchParams(window.location.search);
+ if (urlParams.get('auth') === 'modal') {
+  openStaffAuthModal();
+ } else if (urlParams.get('view') === 'tracker') {
+  switchView('tracker');
+ } else if (urlParams.get('view') === 'staff' || urlParams.get('staff') === '1') {
+  isStaffAuthenticated = true;
+  sessionStorage.setItem('campusfix_staff_auth', 'true');
+  updateNavbarAuthState();
+  switchView('list');
+ } else if (isStaffAuthenticated) {
   loadComplaints();
  }
 });
