@@ -2,6 +2,7 @@ node_modules/
 .DS_Store
 .env
 data/complaints.json
+!data/.gitkeep
 public/uploads/*
 !public/uploads/.gitkeep
 npm-debug.log*
