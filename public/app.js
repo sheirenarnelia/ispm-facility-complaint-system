@@ -29,6 +29,7 @@ function updateNavbarAuthState() {
  const staffLockIcon = document.getElementById('navStaffLockIcon');
  const staffText = document.getElementById('navStaffText');
  const staffLogoutBtn = document.getElementById('navStaffLogout');
+ const navTabList = document.getElementById('navTabList');
 
  if (isStaffAuthenticated) {
   if (staffLockIcon) {
@@ -36,13 +37,19 @@ function updateNavbarAuthState() {
    staffLockIcon.classList.add('text-emerald-500');
   }
   if (staffText) staffText.innerText = 'Staff Portal (Active)';
+  if (navTabList) {
+   navTabList.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold text-white bg-slate-900 border border-slate-900 transition-all flex items-center gap-1.5 shadow-xs';
+  }
   if (staffLogoutBtn) staffLogoutBtn.classList.remove('hidden');
  } else {
   if (staffLockIcon) {
    staffLockIcon.classList.remove('text-emerald-500');
    staffLockIcon.classList.add('text-slate-500');
   }
-  if (staffText) staffText.innerText = 'Staff Portal (Restricted)';
+  if (staffText) staffText.innerText = 'Staff Login';
+  if (navTabList) {
+   navTabList.className = 'px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 transition-all flex items-center gap-1.5 shadow-xs';
+  }
   if (staffLogoutBtn) staffLogoutBtn.classList.add('hidden');
  }
 }
@@ -125,15 +132,21 @@ function switchView(viewName) {
  if (viewName === 'form') {
   if (formView) formView.classList.remove('hidden');
   if (navTabForm) navTabForm.className = activeTabClass;
+  if (navTabTracker) navTabTracker.className = inactiveTabClass;
+  updateNavbarAuthState();
  } else if (viewName === 'tracker') {
   if (trackerView) trackerView.classList.remove('hidden');
   if (navTabTracker) navTabTracker.className = activeTabClass;
+  if (navTabForm) navTabForm.className = inactiveTabClass;
+  updateNavbarAuthState();
   if (!activeTicketId && currentComplaints.length > 0) {
    showTicketInTracker(currentComplaints[0].id, currentComplaints[0]);
   }
  } else {
   if (listView) listView.classList.remove('hidden');
-  if (navTabList) navTabList.className = staffActiveTabClass;
+  if (navTabForm) navTabForm.className = inactiveTabClass;
+  if (navTabTracker) navTabTracker.className = inactiveTabClass;
+  updateNavbarAuthState();
   loadComplaints();
  }
 }
