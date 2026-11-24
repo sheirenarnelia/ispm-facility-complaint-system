@@ -15,6 +15,7 @@ const INITIAL_SEED_DATA = [
     description: "Wall-mounted AC unit shut down completely and is making loud buzzing noises. High room temperature is severely disrupting lectures.",
     photoUrl: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=600&auto=format&fit=crop&q=80",
     status: "In Progress",
+    assignedTechnician: "Pak Joko (Electrical Crew)",
     staffNotes: "Maintenance technician scheduled to inspect capacitor and freon levels at 14:00.",
     createdAt: new Date(Date.now() - 24 * 3600 * 1000 * 2).toISOString(),
     updatedAt: new Date(Date.now() - 24 * 3600 * 1000).toISOString()
@@ -30,6 +31,7 @@ const INITIAL_SEED_DATA = [
     description: "Ceiling HDMI projector flickers continuously and display output shifts to purple/green tint during lecture slides presentation.",
     photoUrl: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&auto=format&fit=crop&q=80",
     status: "Submitted",
+    assignedTechnician: "Unassigned",
     staffNotes: "",
     createdAt: new Date(Date.now() - 24 * 3600 * 1000).toISOString(),
     updatedAt: new Date(Date.now() - 24 * 3600 * 1000).toISOString()
@@ -45,31 +47,62 @@ const INITIAL_SEED_DATA = [
     description: "Washbasin faucet has a severe continuous leak that cannot be shut tightly. Water is overflowing onto the floor creating slip hazards.",
     photoUrl: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=600&auto=format&fit=crop&q=80",
     status: "Resolved",
+    assignedTechnician: "Budi Santoso (Plumbing Specialist)",
     staffNotes: "Faucet valve replaced with new heavy-duty shutoff valve by campus plumbing crew.",
     createdAt: new Date(Date.now() - 24 * 3600 * 1000 * 3).toISOString(),
     updatedAt: new Date(Date.now() - 24 * 3600 * 1000 * 1).toISOString()
   }
 ];
 
+let inMemoryList = null;
+
 class ComplaintModel {
+  static _getStoragePath() {
+    if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
+      return '/tmp/complaints.json';
+    }
+    return DATA_FILE;
+  }
+
   static _ensureStorage() {
-    const dir = path.dirname(DATA_FILE);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
+    if (inMemoryList && inMemoryList.length > 0) return;
+
+    const targetFile = this._getStoragePath();
+
+    // 1. Try reading from targetFile (/tmp on Vercel or data/ locally)
+    try {
+      if (fs.existsSync(targetFile)) {
+        const data = fs.readFileSync(targetFile, 'utf-8');
+        inMemoryList = JSON.parse(data);
+        return;
+      }
+    } catch (e) {}
+
+    // 2. Try reading from original DATA_FILE (data/complaints.json)
+    try {
+      if (fs.existsSync(DATA_FILE)) {
+        const data = fs.readFileSync(DATA_FILE, 'utf-8');
+        inMemoryList = JSON.parse(data);
+      } else {
+        inMemoryList = [...INITIAL_SEED_DATA];
+      }
+    } catch (e) {
+      inMemoryList = [...INITIAL_SEED_DATA];
     }
-    if (!fs.existsSync(DATA_FILE)) {
-      fs.writeFileSync(DATA_FILE, JSON.stringify(INITIAL_SEED_DATA, null, 2), 'utf-8');
-    }
+
+    // 3. Try seeding to targetFile
+    try {
+      const dir = path.dirname(targetFile);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      fs.writeFileSync(targetFile, JSON.stringify(inMemoryList, null, 2), 'utf-8');
+    } catch (e) {}
   }
 
   static getAll() {
     this._ensureStorage();
-    try {
-      const data = fs.readFileSync(DATA_FILE, 'utf-8');
-      return JSON.parse(data);
-    } catch (err) {
-      return INITIAL_SEED_DATA;
-    }
+    return inMemoryList || INITIAL_SEED_DATA;
   }
 
   static getById(id) {
@@ -78,7 +111,8 @@ class ComplaintModel {
   }
 
   static create(complaintData) {
-    const list = this.getAll();
+    this._ensureStorage();
+    const list = inMemoryList || INITIAL_SEED_DATA;
     const newId = `FAC-2026-${String(list.length + 1).padStart(3, '0')}`;
     
     const record = {
@@ -99,12 +133,24 @@ class ComplaintModel {
     };
 
     list.unshift(record);
-    fs.writeFileSync(DATA_FILE, JSON.stringify(list, null, 2), 'utf-8');
+    inMemoryList = list;
+
+    // Safely attempt file write (supports read-only serverless environments like Vercel)
+    try {
+      const targetFile = this._getStoragePath();
+      const dir = path.dirname(targetFile);
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+      fs.writeFileSync(targetFile, JSON.stringify(list, null, 2), 'utf-8');
+    } catch (err) {
+      console.warn('File write fallback: using in-memory state on cloud serverless runtime.');
+    }
+
     return record;
   }
 
   static updateStatus(id, newStatus, staffNotes, assignedTechnician) {
-    const list = this.getAll();
+    this._ensureStorage();
+    const list = inMemoryList || INITIAL_SEED_DATA;
     const index = list.findIndex(item => item.id.toLowerCase() === id.toLowerCase());
     if (index === -1) return null;
 
@@ -116,8 +162,17 @@ class ComplaintModel {
       list[index].assignedTechnician = assignedTechnician;
     }
     list[index].updatedAt = new Date().toISOString();
+    inMemoryList = list;
 
-    fs.writeFileSync(DATA_FILE, JSON.stringify(list, null, 2), 'utf-8');
+    try {
+      const targetFile = this._getStoragePath();
+      const dir = path.dirname(targetFile);
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+      fs.writeFileSync(targetFile, JSON.stringify(list, null, 2), 'utf-8');
+    } catch (err) {
+      console.warn('File write fallback: using in-memory state on cloud serverless runtime.');
+    }
+
     return list[index];
   }
 

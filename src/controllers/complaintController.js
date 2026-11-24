@@ -74,10 +74,14 @@ exports.createComplaint = (req, res) => {
       });
     }
 
-    // Photo URL (uploaded via multipart/form-data or provided as string)
+    // Photo URL (supports both local file uploads and Vercel memory buffer base64)
     let photoUrl = null;
     if (req.file) {
-      photoUrl = `/uploads/${req.file.filename}`;
+      if (req.file.buffer) {
+        photoUrl = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+      } else if (req.file.filename) {
+        photoUrl = `/uploads/${req.file.filename}`;
+      }
     } else if (req.body.photoUrl) {
       photoUrl = req.body.photoUrl;
     }
