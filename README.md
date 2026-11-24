@@ -1,14 +1,14 @@
-# 🏛️ CampusFix: Campus Facility Complaint and Service Request System
+# ️ CampusFix: Campus Facility Complaint and Service Request System
 
-> **Course:** Information Systems Agile Project Management with DevOps (ISAPMD 20261)  
-> **Lecturer:** Eka Parima Saragih, S.Kom., M.Kom.  
-> **Case Study:** Path B — Case 4: Facility Complaint and Service Request System  
-> **Development Lead:** Sheiren Arnelia  
+> **Course:** Information Systems Agile Project Management with DevOps (ISAPMD 20261) 
+> **Lecturer:** Eka Parima Saragih, S.Kom., M.Kom. 
+> **Case Study:** Path B — Case 4: Facility Complaint and Service Request System 
+> **Development Lead:** Sheiren Arnelia 
 > **Repository:** `sheirenarnelia / ispm-facility-complaint-system`
 
 ---
 
-## 📌 1. Background & Problem Statement
+## 1. Background & Problem Statement
 
 In current university campus facility operations, reporting broken or malfunctioning infrastructure (faulty air conditioning, broken projectors, plumbing leaks, damaged classroom furniture) is primarily handled through informal WhatsApp messages, paper logbooks, or verbal reports to security personnel.
 
@@ -21,7 +21,7 @@ In current university campus facility operations, reporting broken or malfunctio
 
 ---
 
-## 🛠️ 2. Technology Stack
+## ️ 2. Technology Stack
 
 The system architecture is engineered to be lightweight, modular, and cloud-ready without unnecessary database overhead during early sprint increments:
 
@@ -36,25 +36,25 @@ The system architecture is engineered to be lightweight, modular, and cloud-read
 
 ---
 
-## 🚀 3. Sprint 1 Deliverables (Class Evaluation Milestone: 24 Nov 2026)
+## 3. Sprint 1 Deliverables (Class Evaluation Milestone: 24 Nov 2026)
 
 For the initial class evaluation milestone on Tuesday, 24 November 2026, the following Sprint 1 increment is fully implemented and operational:
 
 - [x] **Facility Incident Reporting Form (Student Portal):**
-  - Fields: Reporter Name, Email/Contact, Campus Building/Zone, Room Details, Category Dropdown, Urgency Priority, and Detailed Incident Description.
-  - Photographic Evidence Upload with instant client-side image preview.
+ - Fields: Reporter Name, Email/Contact, Campus Building/Zone, Room Details, Category Dropdown, Urgency Priority, and Detailed Incident Description.
+ - Photographic Evidence Upload with instant client-side image preview.
 - [x] **Complaints Directory & Administrative Dashboard (Staff Portal):**
-  - KPI Metric Cards (Total Complaints, Submitted, In Progress, Resolved).
-  - Search and filter bar by Ticket ID, reporter name, location, and status.
-  - Interactive ticket table with urgency badges and photographic thumbnails.
-  - Technician detail modal with live status transition capabilities (*Submitted* ➔ *In Progress* ➔ *Resolved*) and work notes.
+ - KPI Metric Cards (Total Complaints, Submitted, In Progress, Resolved).
+ - Search and filter bar by Ticket ID, reporter name, location, and status.
+ - Interactive ticket table with urgency badges and photographic thumbnails.
+ - Technician detail modal with live status transition capabilities (*Submitted* ➔ *In Progress* ➔ *Resolved*) and work notes.
 - [x] **Automated Ticket ID Generator:** Formats tickets deterministically as `FAC-2026-XXX`.
 - [x] **Standardized REST API:** Exposes endpoints for health check, complaint submission, list querying, and status updates.
 - [x] **Automated CI Workflow:** GitHub Actions multi-version matrix build testing verified with green checkmark status.
 
 ---
 
-## 💻 4. Local Development & Quick Start Guide
+## 4. Local Development & Quick Start Guide
 
 ### Prerequisites
 - [Node.js](https://nodejs.org/) (Version 18.x, 20.x, or 22.x LTS)
@@ -62,33 +62,33 @@ For the initial class evaluation milestone on Tuesday, 24 November 2026, the fol
 
 ### Installation & Execution
 1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/sheirenarnelia/ispm-facility-complaint-system.git
-   cd ispm-facility-complaint-system
-   ```
+  ```bash
+  git clone https://github.com/sheirenarnelia/ispm-facility-complaint-system.git
+  cd ispm-facility-complaint-system
+  ```
 
 2. **Install project dependencies:**
-   ```bash
-   npm install
-   ```
+  ```bash
+  npm install
+  ```
 
 3. **Execute automated unit tests (Verifies system integrity):**
-   ```bash
-   npm test
-   ```
+  ```bash
+  npm test
+  ```
 
 4. **Start the local server:**
-   ```bash
-   npm start
-   ```
-   *(For development mode with auto-reload, use: `npm run dev`)*
+  ```bash
+  npm start
+  ```
+  *(For development mode with auto-reload, use: `npm run dev`)*
 
 5. **Access the application in your browser:**
-   Open `http://localhost:3000` in Google Chrome, Safari, or your preferred browser.
+  Open `http://localhost:3000` in Google Chrome, Safari, or your preferred browser.
 
 ---
 
-## 📡 5. RESTful API Specification
+## 5. RESTful API Specification
 
 | HTTP Method | Endpoint Path | Description |
 | :--- | :--- | :--- |
@@ -101,33 +101,33 @@ For the initial class evaluation milestone on Tuesday, 24 November 2026, the fol
 
 ---
 
-## 🌿 6. Git Branching Strategy & Team Collaboration Policy
+## 6. Git Branching Strategy & Team Collaboration Policy
 
 To ensure high codebase quality, clean commit history, and adherence to Agile DevOps best practices:
 
 ```text
-main   ------------------------------------------------------------> [Production / Live Deployment]
-          \                                                     /
-dev        ----------------------------------------------------> [Integration & CI Testing]
-              \                       /       \             /
-feature        --[feature/sprint-1]---         --[feature/*]--
+main  ------------------------------------------------------------> [Production / Live Deployment]
+     \                           /
+dev    ----------------------------------------------------> [Integration & CI Testing]
+       \            /    \       /
+feature    --[feature/sprint-1]---     --[feature/*]--
 ```
 
 ### Team Branching Rules:
 1. **Direct commits to `main` are strictly forbidden!**
 2. The `main` branch is reserved exclusively for stable, reviewed release increments.
 3. All new feature work must branch off `dev`:
-   ```bash
-   git checkout dev
-   git pull origin dev
-   git checkout -b feature/your-feature-name
-   ```
+  ```bash
+  git checkout dev
+  git pull origin dev
+  git checkout -b feature/your-feature-name
+  ```
 4. Once work is complete, push your branch and open a **Pull Request (PR)** targeting `dev`.
 5. Every Pull Request must pass all automated GitHub Actions CI checks prior to review and merge.
 
 ---
 
-## 👥 7. ISAPMD Project Team Roster & Roles
+## 7. ISAPMD Project Team Roster & Roles
 
 | Team Role | Member Name | Primary Deliverables Ownership |
 | :--- | :--- | :--- |
