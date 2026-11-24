@@ -139,9 +139,22 @@ function switchView(viewName) {
   if (navTabTracker) navTabTracker.className = activeTabClass;
   if (navTabForm) navTabForm.className = inactiveTabClass;
   updateNavbarAuthState();
-  if (latestCreatedTicket) {
-   showTicketInTracker(latestCreatedTicket.id, latestCreatedTicket);
-  } else if (!activeTicketId) {
+  
+  const targetId = activeTicketId || (latestCreatedTicket ? latestCreatedTicket.id : null);
+  if (targetId) {
+   // Always fetch real-time state from server so staff status transitions are immediately reflected
+   fetch(`/api/complaints/${encodeURIComponent(targetId)}`)
+    .then(r => r.json())
+    .then(j => {
+     if (j.success && j.data) {
+      showTicketInTracker(j.data.id, j.data);
+     } else if (latestCreatedTicket) {
+      showTicketInTracker(latestCreatedTicket.id, latestCreatedTicket);
+     }
+    }).catch(() => {
+     if (latestCreatedTicket) showTicketInTracker(latestCreatedTicket.id, latestCreatedTicket);
+    });
+  } else {
    fetch('/api/complaints')
     .then(r => r.json())
     .then(j => {
@@ -207,7 +220,7 @@ function showTicketInTracker(ticketId, data) {
   }
  }
 
- updateTrackerStepper(data.status, data.technician);
+ updateTrackerStepper(data.status, data.assignedTechnician || data.technician);
 
  const formView = document.getElementById('viewForm');
  const trackerView = document.getElementById('viewTracker');
