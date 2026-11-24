@@ -33,6 +33,7 @@ The system architecture is engineered to be lightweight, modular, and cloud-read
 | **Data Layer** | Structured Relational JSON Store | Zero-setup local persistence with pre-seeded data, directly schema-compatible with PostgreSQL / Supabase. |
 | **Automated Testing**| Node.js Native Test Runner (`node:test`, `node:assert`) | Zero external test dependencies, sub-second execution speed, deterministic CI test runs. |
 | **DevOps & CI/CD** | GitHub Actions Pipeline | Automated multi-version matrix build and testing on `main` and `dev` branches. |
+| **Cloud Deployment** | Vercel Platform (`vercel.json`) | Continuous automated deployment from GitHub repository, zero-downtime serverless runtime. |
 
 ---
 
