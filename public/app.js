@@ -139,8 +139,16 @@ function switchView(viewName) {
   if (navTabTracker) navTabTracker.className = activeTabClass;
   if (navTabForm) navTabForm.className = inactiveTabClass;
   updateNavbarAuthState();
-  if (!activeTicketId && currentComplaints.length > 0) {
-   showTicketInTracker(currentComplaints[0].id, currentComplaints[0]);
+  if (latestCreatedTicket) {
+   showTicketInTracker(latestCreatedTicket.id, latestCreatedTicket);
+  } else if (!activeTicketId) {
+   fetch('/api/complaints')
+    .then(r => r.json())
+    .then(j => {
+     if (j.success && j.data && j.data.length > 0) {
+      showTicketInTracker(j.data[0].id, j.data[0]);
+     }
+    }).catch(() => {});
   }
  } else {
   if (listView) listView.classList.remove('hidden');
@@ -305,17 +313,30 @@ function updateTrackerStepper(status, technician) {
  }
 }
 
-function searchTrackerTicket() {
+async function searchTrackerTicket() {
  const input = document.getElementById('trackerSearchInput');
  const query = (input ? input.value : '').trim().toUpperCase();
  if (!query) {
   showToast('Please enter a Ticket ID to track.', 'error');
   return;
  }
+
+ try {
+  const res = await fetch(`/api/complaints/${encodeURIComponent(query)}`);
+  const json = await res.json();
+  if (json.success && json.data) {
+   showTicketInTracker(json.data.id, json.data);
+   showToast(`Ticket ${json.data.id} retrieved successfully.`, 'success');
+   return;
+  }
+ } catch (err) {
+  console.warn('API ticket lookup failed, falling back to local memory:', err);
+ }
+
  const found = currentComplaints.find(c => c.id.toUpperCase() === query);
  if (found) {
   showTicketInTracker(found.id, found);
-  showToast(`Found tracking record for ${found.id}`);
+  showToast(`Ticket ${found.id} retrieved successfully.`, 'success');
  } else {
   showToast(`Ticket ${query} not found in live registry.`, 'error');
  }

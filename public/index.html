@@ -252,7 +252,7 @@
    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-center gap-3">
     <div class="relative flex-1 w-full">
      <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-     <input type="text" id="trackerSearchInput" placeholder="Enter Ticket ID (e.g. FAC-2026-013 or TKT-2026-0001)..."
+     <input type="text" id="trackerSearchInput" onkeydown="if(event.key==='Enter') searchTrackerTicket()" placeholder="Enter Ticket ID (e.g. FAC-2026-025 or FAC-2026-001)..."
       class="w-full pl-10 pr-4 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
     </div>
     <button onclick="searchTrackerTicket()" class="w-full sm:w-auto px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm">
