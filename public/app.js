@@ -2,14 +2,94 @@ let currentComplaints = [];
 let activeTicketId = null;
 let currentSelectedStatus = null;
 let latestCreatedTicket = null;
+let isStaffAuthenticated = sessionStorage.getItem('campusfix_staff_auth') === 'true';
 
 document.addEventListener('DOMContentLoaded', () => {
+ updateNavbarAuthState();
  loadStats();
- loadComplaints();
+ if (isStaffAuthenticated) {
+  loadComplaints();
+ }
 });
+
+// Role-Based Access Control: Staff Auth Modal & Session State
+function updateNavbarAuthState() {
+ const staffLockIcon = document.getElementById('navStaffLockIcon');
+ const staffText = document.getElementById('navStaffText');
+ const staffLogoutBtn = document.getElementById('navStaffLogout');
+
+ if (isStaffAuthenticated) {
+  if (staffLockIcon) {
+   staffLockIcon.classList.remove('text-slate-500');
+   staffLockIcon.classList.add('text-emerald-500');
+  }
+  if (staffText) staffText.innerText = 'Staff Portal (Active)';
+  if (staffLogoutBtn) staffLogoutBtn.classList.remove('hidden');
+ } else {
+  if (staffLockIcon) {
+   staffLockIcon.classList.remove('text-emerald-500');
+   staffLockIcon.classList.add('text-slate-500');
+  }
+  if (staffText) staffText.innerText = 'Staff Portal (Restricted)';
+  if (staffLogoutBtn) staffLogoutBtn.classList.add('hidden');
+ }
+}
+
+function openStaffAuthModal() {
+ const modal = document.getElementById('modalStaffAuth');
+ if (modal) modal.classList.remove('hidden');
+}
+
+function closeStaffAuthModal() {
+ const modal = document.getElementById('modalStaffAuth');
+ if (modal) modal.classList.add('hidden');
+}
+
+function prefillDemoStaffAuth() {
+ const emailInput = document.getElementById('authStaffEmail');
+ const passInput = document.getElementById('authStaffPassword');
+ if (emailInput) emailInput.value = 'staff@campusfix.edu';
+ if (passInput) passInput.value = 'campus2026';
+}
+
+function handleStaffLogin(event) {
+ if (event) event.preventDefault();
+ const email = document.getElementById('authStaffEmail')?.value.trim();
+ const pass = document.getElementById('authStaffPassword')?.value.trim();
+
+ if (!email || !pass) {
+  showToast('Please provide both staff email and password.', 'error');
+  return;
+ }
+
+ // Client-side role validation for staff portal demonstration
+ if (email.toLowerCase().includes('staff') || email.toLowerCase().includes('admin') || pass === 'campus2026') {
+  isStaffAuthenticated = true;
+  sessionStorage.setItem('campusfix_staff_auth', 'true');
+  closeStaffAuthModal();
+  updateNavbarAuthState();
+  showToast('Authenticated as Facilities Maintenance Officer.', 'success');
+  switchView('list');
+ } else {
+  showToast('Access denied: Unauthorized staff credentials.', 'error');
+ }
+}
+
+function logoutStaff() {
+ isStaffAuthenticated = false;
+ sessionStorage.removeItem('campusfix_staff_auth');
+ updateNavbarAuthState();
+ showToast('Signed out of Staff Portal.', 'info');
+ switchView('form');
+}
 
 // Switch between Form, Tracker, and Staff List views
 function switchView(viewName) {
+ if (viewName === 'list' && !isStaffAuthenticated) {
+  openStaffAuthModal();
+  return;
+ }
+
  const formView = document.getElementById('viewForm');
  const trackerView = document.getElementById('viewTracker');
  const listView = document.getElementById('viewList');

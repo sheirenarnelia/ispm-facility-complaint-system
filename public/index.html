@@ -70,11 +70,16 @@
       </button>
     </div>
     <div class="h-4 w-px bg-slate-300 mx-1.5"></div>
-    <button id="navTabList" onclick="switchView('list')" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-700 hover:bg-white hover:text-slate-900 transition-all flex items-center gap-1.5">
-     <span class="w-2 h-2 rounded-full bg-blue-600"></span>
-     <span>Staff Portal (Admin Triage)</span>
-     <span id="navCount" class="ml-1 bg-blue-100 text-blue-700 px-1.5 py-0.2 rounded-full text-[10px] font-bold">0</span>
-    </button>
+    <div class="flex items-center space-x-1">
+      <button id="navTabList" onclick="switchView('list')" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-700 hover:bg-white hover:text-slate-900 transition-all flex items-center gap-1.5">
+       <svg id="navStaffLockIcon" class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+       <span id="navStaffText">Staff Portal (Restricted)</span>
+       <span id="navCount" class="ml-1 bg-blue-100 text-blue-700 px-1.5 py-0.2 rounded-full text-[10px] font-bold">0</span>
+      </button>
+      <button id="navStaffLogout" onclick="logoutStaff()" class="hidden px-2 py-1 rounded-md text-[11px] font-semibold text-rose-600 hover:bg-rose-50 border border-rose-200 transition-all" title="Logout from Staff Portal">
+       Logout
+      </button>
+    </div>
    </div>
   </div>
  </header>
@@ -407,9 +412,16 @@
      <h2 class="text-lg font-bold text-white mt-1">Incident Triage & Maintenance Dispatch Board</h2>
      <p class="text-xs text-slate-300">Restricted staff view for reviewing student complaints, assigning technicians, and logging resolution status.</p>
     </div>
-    <div class="flex items-center space-x-2">
-     <button onclick="switchView('form')" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all">
-      Switch to Reporter View
+    <div class="flex items-center space-x-3">
+     <div class="text-right hidden sm:block">
+      <p class="text-xs text-slate-300 font-medium">Session: <span class="text-white font-bold">Facility Officer</span></p>
+      <p class="text-[10px] text-slate-400">staff@campusfix.edu</p>
+     </div>
+     <button onclick="logoutStaff()" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-rose-600/90 hover:bg-rose-600 text-white transition-all shadow-xs">
+      Sign Out
+     </button>
+     <button onclick="switchView('form')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all">
+      Reporter View
      </button>
     </div>
    </div>
@@ -619,12 +631,12 @@
       <div>
        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Assigned Maintenance Technician:</label>
        <select id="modalTechnician" class="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-blue-500 bg-white">
-        <option value="Unassigned">️ Unassigned (Pending Dispatch)</option>
-        <option value="Pak Joko (Electrical Crew)"> Pak Joko (Electrical Crew)</option>
-        <option value="Budi Santoso (Plumbing Specialist)"> Budi Santoso (Plumbing Specialist)</option>
-        <option value="Ahmad Ridwan (Furniture Specialist)"> Ahmad Ridwan (Furniture Specialist)</option>
-        <option value="Irwan Pratama (HVAC Specialist)">️ Irwan Pratama (HVAC Specialist)</option>
-        <option value="Doni Kusuma (IT & Audio-Visual)">️ Doni Kusuma (IT & Audio-Visual)</option>
+        <option value="Unassigned">Unassigned (Pending Dispatch)</option>
+        <option value="Pak Joko (Electrical Crew)">Pak Joko (Electrical Crew)</option>
+        <option value="Budi Santoso (Plumbing Specialist)">Budi Santoso (Plumbing Specialist)</option>
+        <option value="Ahmad Ridwan (Furniture Specialist)">Ahmad Ridwan (Furniture Specialist)</option>
+        <option value="Irwan Pratama (HVAC Specialist)">Irwan Pratama (HVAC Specialist)</option>
+        <option value="Doni Kusuma (IT & Audio-Visual)">Doni Kusuma (IT & Audio-Visual)</option>
        </select>
       </div>
       <div>
@@ -641,6 +653,61 @@
   </div>
  </div>
 
- <script src="/app.js?v=2.2"></script>
+ <!-- Staff Authentication Modal (Role-Based Access Control) -->
+ <div id="modalStaffAuth" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden">
+  <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+   <div class="bg-slate-900 text-white p-5 flex items-center justify-between">
+    <div class="flex items-center space-x-2.5">
+     <div class="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center text-white">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+     </div>
+     <div>
+      <h3 class="text-sm font-bold text-white">Staff Portal Authentication</h3>
+      <p class="text-xs text-slate-400">Campus Facilities Management Unit</p>
+     </div>
+    </div>
+    <button onclick="closeStaffAuthModal()" class="text-slate-400 hover:text-white p-1 rounded-lg">
+     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+    </button>
+   </div>
+
+   <form id="staffAuthForm" onsubmit="handleStaffLogin(event)" class="p-6 space-y-4">
+    <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900">
+     <p class="font-bold">Authorized Operations Personnel Only</p>
+     <p class="mt-0.5 text-amber-800">Public reporters must use the intake form or tracker. Authentication is required to access internal triage and technician dispatch.</p>
+    </div>
+
+    <div>
+     <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Staff Work Email</label>
+     <input type="email" id="authStaffEmail" value="staff@campusfix.edu" required
+      class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+    </div>
+
+    <div>
+     <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Security Password</label>
+     <input type="password" id="authStaffPassword" value="campus2026" required
+      class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+    </div>
+
+    <div class="flex items-center justify-between text-xs pt-1">
+     <span class="text-slate-500">Demo Login: <span class="font-mono text-slate-700 font-semibold">staff@campusfix.edu</span></span>
+     <button type="button" onclick="prefillDemoStaffAuth()" class="text-blue-600 font-semibold hover:underline">
+      Use Demo Creds
+     </button>
+    </div>
+
+    <div class="pt-2 flex items-center space-x-2">
+     <button type="button" onclick="closeStaffAuthModal()" class="w-1/2 py-2.5 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-all">
+      Cancel
+     </button>
+     <button type="submit" class="w-1/2 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-500/20 transition-all">
+      Sign In to Portal
+     </button>
+    </div>
+   </form>
+  </div>
+ </div>
+
+ <script src="/app.js?v=2.3"></script>
 </body>
 </html>
