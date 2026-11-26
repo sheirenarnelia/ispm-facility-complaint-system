@@ -660,11 +660,33 @@ async function saveStatusUpdate() {
  }
 }
 
-// Sprint 2 Change Request Features
+let isUrgentFilterActive = false;
+
+// Sprint 2 Change Request Features: Toggle Urgent Filter
+function toggleUrgentFilter() {
+ const btn = document.getElementById('btnUrgentFilter');
+ isUrgentFilterActive = !isUrgentFilterActive;
+
+ if (isUrgentFilterActive) {
+  const urgentTickets = currentComplaints.filter(c => c.priority === 'Urgent');
+  renderTable(urgentTickets);
+  if (btn) {
+   btn.innerText = 'Show All Complaints';
+   btn.className = 'px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-semibold shadow-xs transition-all whitespace-nowrap';
+  }
+  showToast(`Filtered: Displaying ${urgentTickets.length} urgent hazard tickets only.`);
+ } else {
+  renderTable(currentComplaints);
+  if (btn) {
+   btn.innerText = 'Filter Urgent Hazards';
+   btn.className = 'px-3.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-semibold shadow-xs transition-all whitespace-nowrap';
+  }
+  showToast('Filter cleared: Displaying all complaints.');
+ }
+}
+
 function filterByUrgentOnly() {
- const urgentTickets = currentComplaints.filter(c => c.priority === 'Urgent');
- renderTable(urgentTickets);
- showToast(`Filtered: Displaying ${urgentTickets.length} urgent hazard tickets only.`);
+ toggleUrgentFilter();
 }
 
 function exportToCSV() {
